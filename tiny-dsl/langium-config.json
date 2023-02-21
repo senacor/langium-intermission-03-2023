@@ -1,0 +1,12 @@
+{
+    "projectName": "TinyDsl",
+    "languages": [{
+        "id": "tiny-dsl",
+        "grammar": "src/language-server/tiny-dsl.langium",
+        "fileExtensions": [".tinydsl"],
+        "textMate": {
+            "out": "syntaxes/tiny-dsl.tmLanguage.json"
+        }
+    }],
+    "out": "src/language-server/generated"
+}
