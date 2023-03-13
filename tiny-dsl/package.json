@@ -24,7 +24,12 @@
         "commands": [{
             "command": "tinydsl.generateSql",
             "title": "Generate TinyDSL SQL DDL"
-        }]
+        }],
+        "menus": {
+            "editor/title": [{
+                "command": "tinydsl.generateSql"
+            }]
+        }
     },
     "activationEvents": [
         "onLanguage:tiny-dsl"
