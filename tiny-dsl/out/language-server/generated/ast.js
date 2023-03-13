@@ -4,30 +4,57 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reflection = exports.TinyDslAstReflection = exports.isPerson = exports.Person = exports.isModel = exports.Model = exports.isGreeting = exports.Greeting = void 0;
+exports.reflection = exports.TinyDslAstReflection = exports.isType = exports.Type = exports.isKind = exports.Kind = exports.isField = exports.Field = exports.isEntity = exports.Entity = exports.isDocument = exports.Document = exports.isConnection = exports.Connection = exports.isMember = exports.Member = void 0;
 /* eslint-disable */
 const langium_1 = require("langium");
-exports.Greeting = 'Greeting';
-function isGreeting(item) {
-    return exports.reflection.isInstance(item, exports.Greeting);
+exports.Member = 'Member';
+function isMember(item) {
+    return exports.reflection.isInstance(item, exports.Member);
 }
-exports.isGreeting = isGreeting;
-exports.Model = 'Model';
-function isModel(item) {
-    return exports.reflection.isInstance(item, exports.Model);
+exports.isMember = isMember;
+exports.Connection = 'Connection';
+function isConnection(item) {
+    return exports.reflection.isInstance(item, exports.Connection);
 }
-exports.isModel = isModel;
-exports.Person = 'Person';
-function isPerson(item) {
-    return exports.reflection.isInstance(item, exports.Person);
+exports.isConnection = isConnection;
+exports.Document = 'Document';
+function isDocument(item) {
+    return exports.reflection.isInstance(item, exports.Document);
 }
-exports.isPerson = isPerson;
+exports.isDocument = isDocument;
+exports.Entity = 'Entity';
+function isEntity(item) {
+    return exports.reflection.isInstance(item, exports.Entity);
+}
+exports.isEntity = isEntity;
+exports.Field = 'Field';
+function isField(item) {
+    return exports.reflection.isInstance(item, exports.Field);
+}
+exports.isField = isField;
+exports.Kind = 'Kind';
+function isKind(item) {
+    return exports.reflection.isInstance(item, exports.Kind);
+}
+exports.isKind = isKind;
+exports.Type = 'Type';
+function isType(item) {
+    return exports.reflection.isInstance(item, exports.Type);
+}
+exports.isType = isType;
 class TinyDslAstReflection extends langium_1.AbstractAstReflection {
     getAllTypes() {
-        return ['Greeting', 'Model', 'Person'];
+        return ['Connection', 'Document', 'Entity', 'Field', 'Kind', 'Member', 'Type'];
     }
     computeIsSubtype(subtype, supertype) {
         switch (subtype) {
+            case exports.Connection:
+            case exports.Field: {
+                return this.isSubtype(exports.Member, supertype);
+            }
+            case exports.Type: {
+                return this.isSubtype(exports.Field, supertype);
+            }
             default: {
                 return false;
             }
@@ -36,8 +63,8 @@ class TinyDslAstReflection extends langium_1.AbstractAstReflection {
     getReferenceType(refInfo) {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'Greeting:person': {
-                return exports.Person;
+            case 'Connection:to': {
+                return exports.Entity;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -46,12 +73,19 @@ class TinyDslAstReflection extends langium_1.AbstractAstReflection {
     }
     getTypeMetaData(type) {
         switch (type) {
-            case 'Model': {
+            case 'Document': {
                 return {
-                    name: 'Model',
+                    name: 'Document',
                     mandatory: [
-                        { name: 'greetings', type: 'array' },
-                        { name: 'persons', type: 'array' }
+                        { name: 'entities', type: 'array' }
+                    ]
+                };
+            }
+            case 'Entity': {
+                return {
+                    name: 'Entity',
+                    mandatory: [
+                        { name: 'members', type: 'array' }
                     ]
                 };
             }

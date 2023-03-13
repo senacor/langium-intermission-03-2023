@@ -8,7 +8,7 @@ function registerValidationChecks(services) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.TinyDslValidator;
     const checks = {
-        Person: validator.checkPersonStartsWithCapital
+        Entity: validator.checkEntitiesStartsWithCapital
     };
     registry.register(checks, validator);
 }
@@ -17,11 +17,11 @@ exports.registerValidationChecks = registerValidationChecks;
  * Implementation of custom validations.
  */
 class TinyDslValidator {
-    checkPersonStartsWithCapital(person, accept) {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
+    checkEntitiesStartsWithCapital(entity, accept) {
+        if (entity.name) {
+            const firstChar = entity.name.substring(0, 1);
             if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
+                accept('warning', 'Entity name should start with a capital.', { node: entity, property: 'name' });
             }
         }
     }

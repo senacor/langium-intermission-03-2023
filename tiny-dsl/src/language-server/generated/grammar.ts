@@ -13,36 +13,19 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
   "rules": [
     {
       "$type": "ParserRule",
-      "name": "Model",
+      "name": "Document",
       "entry": true,
       "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "persons",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@1"
-              },
-              "arguments": []
-            }
+        "$type": "Assignment",
+        "feature": "entities",
+        "operator": "+=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$ref": "#/rules@1"
           },
-          {
-            "$type": "Assignment",
-            "feature": "greetings",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@2"
-              },
-              "arguments": []
-            }
-          }
-        ],
+          "arguments": []
+        },
         "cardinality": "*"
       },
       "definesHiddenTokens": false,
@@ -53,13 +36,13 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
     },
     {
       "$type": "ParserRule",
-      "name": "Person",
+      "name": "Entity",
       "definition": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Keyword",
-            "value": "person"
+            "value": "Entity"
           },
           {
             "$type": "Assignment",
@@ -68,7 +51,91 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@4"
+                "$ref": "#/rules@8"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "members",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@2"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Member",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@3"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@5"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Field",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@4"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@8"
               },
               "arguments": []
             }
@@ -84,17 +151,57 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
     },
     {
       "$type": "ParserRule",
-      "name": "Greeting",
+      "name": "Type",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "dataType",
+        "operator": "=",
+        "terminal": {
+          "$type": "Alternatives",
+          "elements": [
+            {
+              "$type": "Keyword",
+              "value": "String"
+            },
+            {
+              "$type": "Keyword",
+              "value": "Int"
+            },
+            {
+              "$type": "Keyword",
+              "value": "Bool"
+            }
+          ]
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Connection",
       "definition": {
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "Hello"
+            "$type": "Assignment",
+            "feature": "kind",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@6"
+              },
+              "arguments": []
+            }
           },
           {
             "$type": "Assignment",
-            "feature": "person",
+            "feature": "to",
             "operator": "=",
             "terminal": {
               "$type": "CrossReference",
@@ -104,7 +211,7 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@4"
+                  "$ref": "#/rules@8"
                 },
                 "arguments": []
               },
@@ -113,9 +220,53 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
           },
           {
             "$type": "Keyword",
-            "value": "!"
+            "value": "as"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@8"
+              },
+              "arguments": []
+            }
           }
         ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Kind",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "kindType",
+        "operator": "=",
+        "terminal": {
+          "$type": "Alternatives",
+          "elements": [
+            {
+              "$type": "Keyword",
+              "value": "has"
+            },
+            {
+              "$type": "Keyword",
+              "value": "consistOf"
+            },
+            {
+              "$type": "Keyword",
+              "value": "partOf"
+            }
+          ]
+        }
       },
       "definesHiddenTokens": false,
       "entry": false,

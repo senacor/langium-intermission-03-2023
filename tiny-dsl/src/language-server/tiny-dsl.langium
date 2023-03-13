@@ -1,13 +1,40 @@
 grammar TinyDsl
 
-entry Model:
-    (persons+=Person | greetings+=Greeting)*;
+// entry Document: 
+//     (entities+=Entity)*;
 
-Person:
-    'person' name=ID;
+// Entity:
+//     'Entity' name=ID ;
 
-Greeting:
-    'Hello' person=[Person:ID] '!';
+
+entry Document:
+    (entities+=Entity)*;
+
+Entity:
+    'Entity' name=ID '{'
+        (members+=Member)*
+    '}'
+    ;
+
+Member:
+    Field | Connection
+    ;
+
+Field:
+    Type name=ID
+    ;
+
+Type:
+    dataType=('String' | 'Int' | 'Bool')
+    ;
+
+Connection:
+    kind=Kind to=[Entity:ID] 'as' name=ID 
+    ;
+
+Kind:
+    kindType = ('has' | 'consistOf' | 'partOf')
+    ;
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

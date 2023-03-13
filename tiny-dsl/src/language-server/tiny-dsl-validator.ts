@@ -1,5 +1,5 @@
 import { ValidationAcceptor, ValidationChecks } from 'langium';
-import { TinyDslAstType, Person } from './generated/ast';
+import { TinyDslAstType, Entity } from './generated/ast';
 import type { TinyDslServices } from './tiny-dsl-module';
 
 /**
@@ -9,7 +9,7 @@ export function registerValidationChecks(services: TinyDslServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.TinyDslValidator;
     const checks: ValidationChecks<TinyDslAstType> = {
-        Person: validator.checkPersonStartsWithCapital
+        Entity: validator.checkEntitiesStartsWithCapital
     };
     registry.register(checks, validator);
 }
@@ -19,11 +19,11 @@ export function registerValidationChecks(services: TinyDslServices) {
  */
 export class TinyDslValidator {
 
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
+    checkEntitiesStartsWithCapital(entity: Entity, accept: ValidationAcceptor): void {
+        if (entity.name) {
+            const firstChar = entity.name.substring(0, 1);
             if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
+                accept('warning', 'Entity name should start with a capital.', { node: entity, property: 'name' });
             }
         }
     }

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { Model } from '../language-server/generated/ast';
+import { Document } from '../language-server/generated/ast';
 import { TinyDslLanguageMetaData } from '../language-server/generated/module';
 import { createTinyDslServices } from '../language-server/tiny-dsl-module';
 import { extractAstNode } from './cli-util';
@@ -9,7 +9,7 @@ import { NodeFileSystem } from 'langium/node';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createTinyDslServices(NodeFileSystem).TinyDsl;
-    const model = await extractAstNode<Model>(fileName, services);
+    const model = await extractAstNode<Document>(fileName, services);
     const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
 };

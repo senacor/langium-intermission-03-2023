@@ -6,56 +6,113 @@
 /* eslint-disable */
 import { AstNode, AbstractAstReflection, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 
-export interface Greeting extends AstNode {
-    readonly $container: Model;
-    readonly $type: 'Greeting';
-    person: Reference<Person>
+export type Member = Connection | Field;
+
+export const Member = 'Member';
+
+export function isMember(item: unknown): item is Member {
+    return reflection.isInstance(item, Member);
 }
 
-export const Greeting = 'Greeting';
-
-export function isGreeting(item: unknown): item is Greeting {
-    return reflection.isInstance(item, Greeting);
+export interface Connection extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'Connection';
+    kind: Kind
+    name: string
+    to: Reference<Entity>
 }
 
-export interface Model extends AstNode {
-    readonly $type: 'Model';
-    greetings: Array<Greeting>
-    persons: Array<Person>
+export const Connection = 'Connection';
+
+export function isConnection(item: unknown): item is Connection {
+    return reflection.isInstance(item, Connection);
 }
 
-export const Model = 'Model';
-
-export function isModel(item: unknown): item is Model {
-    return reflection.isInstance(item, Model);
+export interface Document extends AstNode {
+    readonly $type: 'Document';
+    entities: Array<Entity>
 }
 
-export interface Person extends AstNode {
-    readonly $container: Model;
-    readonly $type: 'Person';
+export const Document = 'Document';
+
+export function isDocument(item: unknown): item is Document {
+    return reflection.isInstance(item, Document);
+}
+
+export interface Entity extends AstNode {
+    readonly $container: Document;
+    readonly $type: 'Entity';
+    members: Array<Member>
     name: string
 }
 
-export const Person = 'Person';
+export const Entity = 'Entity';
 
-export function isPerson(item: unknown): item is Person {
-    return reflection.isInstance(item, Person);
+export function isEntity(item: unknown): item is Entity {
+    return reflection.isInstance(item, Entity);
+}
+
+export interface Field extends AstNode {
+    readonly $container: Entity;
+    readonly $type: 'Field' | 'Type';
+    name: string
+}
+
+export const Field = 'Field';
+
+export function isField(item: unknown): item is Field {
+    return reflection.isInstance(item, Field);
+}
+
+export interface Kind extends AstNode {
+    readonly $container: Connection;
+    readonly $type: 'Kind';
+    kindType: 'consistOf' | 'has' | 'partOf'
+}
+
+export const Kind = 'Kind';
+
+export function isKind(item: unknown): item is Kind {
+    return reflection.isInstance(item, Kind);
+}
+
+export interface Type extends Field {
+    readonly $container: Entity;
+    readonly $type: 'Type';
+    dataType: 'Bool' | 'Int' | 'String'
+}
+
+export const Type = 'Type';
+
+export function isType(item: unknown): item is Type {
+    return reflection.isInstance(item, Type);
 }
 
 export interface TinyDslAstType {
-    Greeting: Greeting
-    Model: Model
-    Person: Person
+    Connection: Connection
+    Document: Document
+    Entity: Entity
+    Field: Field
+    Kind: Kind
+    Member: Member
+    Type: Type
 }
 
 export class TinyDslAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Greeting', 'Model', 'Person'];
+        return ['Connection', 'Document', 'Entity', 'Field', 'Kind', 'Member', 'Type'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
+            case Connection:
+            case Field: {
+                return this.isSubtype(Member, supertype);
+            }
+            case Type: {
+                return this.isSubtype(Field, supertype);
+            }
             default: {
                 return false;
             }
@@ -65,8 +122,8 @@ export class TinyDslAstReflection extends AbstractAstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'Greeting:person': {
-                return Person;
+            case 'Connection:to': {
+                return Entity;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -76,12 +133,19 @@ export class TinyDslAstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
-            case 'Model': {
+            case 'Document': {
                 return {
-                    name: 'Model',
+                    name: 'Document',
                     mandatory: [
-                        { name: 'greetings', type: 'array' },
-                        { name: 'persons', type: 'array' }
+                        { name: 'entities', type: 'array' }
+                    ]
+                };
+            }
+            case 'Entity': {
+                return {
+                    name: 'Entity',
+                    mandatory: [
+                        { name: 'members', type: 'array' }
                     ]
                 };
             }

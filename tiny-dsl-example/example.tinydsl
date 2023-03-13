@@ -1,6 +1,17 @@
-person Benjamin
-person Konrad
-person Claas
 
-Hello Benjamin!
-Hello Konrad!
+
+
+
+
+Entity Kunde {
+    String Name
+    Int Alter
+
+    has Kredit as Kontrahent
+}
+
+Entity Kredit {
+    Int Saldo
+}
+
+
