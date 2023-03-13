@@ -57,9 +57,6 @@ class TinyDslAstReflection extends langium_1.AbstractAstReflection {
             case exports.Field: {
                 return this.isSubtype(exports.Member, supertype);
             }
-            case exports.Type: {
-                return this.isSubtype(exports.Field, supertype);
-            }
             default: {
                 return false;
             }

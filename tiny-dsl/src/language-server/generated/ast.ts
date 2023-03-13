@@ -55,8 +55,9 @@ export function isEntity(item: unknown): item is Entity {
 
 export interface Field extends AstNode {
     readonly $container: Entity;
-    readonly $type: 'Field' | 'Type';
+    readonly $type: 'Field';
     name: string
+    type: Type
 }
 
 export const Field = 'Field';
@@ -90,8 +91,8 @@ export function isKind(item: unknown): item is Kind {
     return reflection.isInstance(item, Kind);
 }
 
-export interface Type extends Field {
-    readonly $container: Entity;
+export interface Type extends AstNode {
+    readonly $container: Field;
     readonly $type: 'Type';
     dataType: 'Bool' | 'Int' | 'String'
 }
@@ -124,9 +125,6 @@ export class TinyDslAstReflection extends AbstractAstReflection {
             case Connection:
             case Field: {
                 return this.isSubtype(Member, supertype);
-            }
-            case Type: {
-                return this.isSubtype(Field, supertype);
             }
             default: {
                 return false;

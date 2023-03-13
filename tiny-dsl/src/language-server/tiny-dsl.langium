@@ -21,7 +21,7 @@ Member:
     ;
 
 Field:
-    Type name=ID
+    type=Type name=ID
     ;
 
 Type:
