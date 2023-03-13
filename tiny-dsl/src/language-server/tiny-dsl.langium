@@ -36,6 +36,13 @@ Kind:
     kindType = ('has' | 'consistOf' | 'partOf')
     ;
 
+interface NamedElement {
+    name: string
+}
+
+NamedElement returns NamedElement:
+    Entity | Member 
+    ;
 // QualifiedName returns string:
 //     ID ('.' ID)*
 //     ;
