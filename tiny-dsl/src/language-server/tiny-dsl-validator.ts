@@ -1,8 +1,8 @@
-import { ValidationAcceptor, ValidationChecks } from "langium";
+import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 
-import { Document, Entity, NamedElement, TinyDslAstType } from "./generated/ast";
+import { Document, Entity, NamedElement, TinyDslAstType } from './generated/ast';
 
-import type { TinyDslServices } from "./tiny-dsl-module";
+import type { TinyDslServices } from './tiny-dsl-module';
 
 /**
  * Register custom validation checks.
@@ -17,35 +17,50 @@ export function registerValidationChecks(services: TinyDslServices) {
     registry.register(checks, validator);
 }
 
+export interface Issue {
+    code: string;
+    msg: string;
+}
+
+export const Issues: { [key: string]: Issue } = {
+    Document_DuplicateEntities: { code: 'Document.DuplicateEntities', msg: 'Duplicate entity' },
+    Entity_DuplicateMembers: { code: 'Entity.DuplicateMembers', msg: 'Duplicate member' },
+    Entity_NameNotCapitalized: { code: 'Entity.NameNotCapitalized', msg: 'Entity name should start with a capital.' },
+};
+
 /**
  * Implementation of custom validations.
  */
 export class TinyDslValidator {
     checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
-        this.checkNoDuplicateElements(document.entities, "Duplicate entity", accept);
+        this.checkNoDuplicateElements(document.entities, Issues.Document_DuplicateEntities, accept);
     }
 
     checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
-        this.checkNoDuplicateElements(entity.members, "Duplicate member", accept);
+        this.checkNoDuplicateElements(entity.members, Issues.Entity_DuplicateMembers, accept);
     }
 
     checkEntity_NameStartsWithCapital(entity: Entity, accept: ValidationAcceptor): void {
         if (entity.name) {
             const firstChar = entity.name.substring(0, 1);
             if (firstChar.toUpperCase() !== firstChar) {
-                accept("warning", "Entity name should start with a capital.", { node: entity, property: "name" });
+                accept('warning', Issues.Entity_NameNotCapitalized.msg, {
+                    node: entity,
+                    property: 'name',
+                    code: Issues.Entity_NameNotCapitalized.code,
+                });
             }
         }
     }
 
-    checkNoDuplicateElements(elements: NamedElement[], errorMsg: string, accept: ValidationAcceptor) {
+    checkNoDuplicateElements(elements: NamedElement[], issue: Issue, accept: ValidationAcceptor) {
         let duplicates = elements
             .groupBy((el) => el.name)
             .valuesArray()
             .filter((arr) => arr.length >= 2)
             .flat();
         for (let dup of duplicates) {
-            accept("error", `${errorMsg} [${dup.name}]`, { node: dup, property: "name" });
+            accept('error', `${issue.msg} [${dup.name}]`, { node: dup, property: 'name', code: issue.code });
         }
     }
 }
