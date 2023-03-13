@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, NL, toString } from 'langium';
 import path from 'path';
 import { Connection, Document, Entity, Field, isConnection, isField } from '../language-server/generated/ast';
-import { extractDestinationAndName } from './cli-util';
+import { extractDestinationAndName } from '../cli/cli-util';
 
 export function generateSqlFile(document: Document, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);

@@ -4,7 +4,7 @@ import { Document } from '../language-server/generated/ast';
 import { TinyDslLanguageMetaData } from '../language-server/generated/module';
 import { createTinyDslServices } from '../language-server/tiny-dsl-module';
 import { extractAstNode } from './cli-util';
-import { generateSqlFile } from './generator';
+import { generateSqlFile } from '../generator/generator';
 import { NodeFileSystem } from 'langium/node';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
