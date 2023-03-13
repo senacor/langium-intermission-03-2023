@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { CompositeGeneratorNode, NL, toString } from 'langium';
 import path from 'path';
-import { Document, Entity, Field, isField } from '../language-server/generated/ast';
+import { Connection, Document, Entity, Field, isConnection, isField } from '../language-server/generated/ast';
 import { extractDestinationAndName } from './cli-util';
 
 export function generateSqlFile(document: Document, filePath: string, destination: string | undefined): string {
@@ -20,7 +20,7 @@ export function generateSqlFile(document: Document, filePath: string, destinatio
 
 function entityToOutput(entity: Entity, output: CompositeGeneratorNode) {
 
-    output.append(`CREATE TABLE ${entity.name} (`, NL);
+    output.append(`CREATE TABLE ${entity.name.toLowerCase()} (`, NL);
     output.append(`  ${entity.name.toLowerCase()}_id NUMBER(16, 0) PRIMARY KEY`, NL);
 
     entity.members
@@ -28,7 +28,15 @@ function entityToOutput(entity: Entity, output: CompositeGeneratorNode) {
         .map(field => field as Field)
         .forEach(field => output.append(`  ${field.name.toLowerCase()} ${mapDatatype(field.type.dataType)},`, NL))
 
-    output.append(');', NL);
+    entity.members
+        .filter(member => isConnection(member))
+        .map(connection => connection as Connection)
+        .forEach(connection => {
+            output.append(`  /* Relation to Table ${connection.to.ref?.name.toLowerCase()} */`, NL);
+            output.append(`  ${connection.name.toLowerCase()}_id NUMBER(16, 0),`, NL);
+        })
+
+    output.append(');', NL, NL);
 }
 
 function mapDatatype(datatype: 'Bool' | 'Int' | 'String'): string {
