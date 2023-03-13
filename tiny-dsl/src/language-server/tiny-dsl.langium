@@ -1,14 +1,14 @@
 grammar TinyDsl
 
-// entry Document: 
-//     (entities+=Entity)*;
-
-// Entity:
-//     'Entity' name=ID ;
-
 
 entry Document:
+    (imports+=Import)*
+    
     (entities+=Entity)*;
+
+Import:
+    'import' path=STRING 'as' id=ID
+    ;
 
 Entity:
     'Entity' name=ID '{'
@@ -35,6 +35,11 @@ Connection:
 Kind:
     kindType = ('has' | 'consistOf' | 'partOf')
     ;
+
+// QualifiedName returns string:
+//     ID ('.' ID)*
+//     ;
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

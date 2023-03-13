@@ -4,7 +4,7 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reflection = exports.TinyDslAstReflection = exports.isType = exports.Type = exports.isKind = exports.Kind = exports.isField = exports.Field = exports.isEntity = exports.Entity = exports.isDocument = exports.Document = exports.isConnection = exports.Connection = exports.isMember = exports.Member = void 0;
+exports.reflection = exports.TinyDslAstReflection = exports.isType = exports.Type = exports.isKind = exports.Kind = exports.isImport = exports.Import = exports.isField = exports.Field = exports.isEntity = exports.Entity = exports.isDocument = exports.Document = exports.isConnection = exports.Connection = exports.isMember = exports.Member = void 0;
 /* eslint-disable */
 const langium_1 = require("langium");
 exports.Member = 'Member';
@@ -32,6 +32,11 @@ function isField(item) {
     return exports.reflection.isInstance(item, exports.Field);
 }
 exports.isField = isField;
+exports.Import = 'Import';
+function isImport(item) {
+    return exports.reflection.isInstance(item, exports.Import);
+}
+exports.isImport = isImport;
 exports.Kind = 'Kind';
 function isKind(item) {
     return exports.reflection.isInstance(item, exports.Kind);
@@ -44,7 +49,7 @@ function isType(item) {
 exports.isType = isType;
 class TinyDslAstReflection extends langium_1.AbstractAstReflection {
     getAllTypes() {
-        return ['Connection', 'Document', 'Entity', 'Field', 'Kind', 'Member', 'Type'];
+        return ['Connection', 'Document', 'Entity', 'Field', 'Import', 'Kind', 'Member', 'Type'];
     }
     computeIsSubtype(subtype, supertype) {
         switch (subtype) {
@@ -77,7 +82,8 @@ class TinyDslAstReflection extends langium_1.AbstractAstReflection {
                 return {
                     name: 'Document',
                     mandatory: [
-                        { name: 'entities', type: 'array' }
+                        { name: 'entities', type: 'array' },
+                        { name: 'imports', type: 'array' }
                     ]
                 };
             }

@@ -1,5 +1,6 @@
 
 
+import "otherFolder/Kredit" as Kredit
 
 
 
@@ -9,9 +10,4 @@ Entity Kunde {
 
     has Kredit as Kontrahent
 }
-
-Entity Kredit {
-    Int Saldo
-}
-
 

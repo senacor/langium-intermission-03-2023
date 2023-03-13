@@ -31,6 +31,7 @@ export function isConnection(item: unknown): item is Connection {
 export interface Document extends AstNode {
     readonly $type: 'Document';
     entities: Array<Entity>
+    imports: Array<Import>
 }
 
 export const Document = 'Document';
@@ -64,6 +65,19 @@ export function isField(item: unknown): item is Field {
     return reflection.isInstance(item, Field);
 }
 
+export interface Import extends AstNode {
+    readonly $container: Document;
+    readonly $type: 'Import';
+    id: string
+    path: string
+}
+
+export const Import = 'Import';
+
+export function isImport(item: unknown): item is Import {
+    return reflection.isInstance(item, Import);
+}
+
 export interface Kind extends AstNode {
     readonly $container: Connection;
     readonly $type: 'Kind';
@@ -93,6 +107,7 @@ export interface TinyDslAstType {
     Document: Document
     Entity: Entity
     Field: Field
+    Import: Import
     Kind: Kind
     Member: Member
     Type: Type
@@ -101,7 +116,7 @@ export interface TinyDslAstType {
 export class TinyDslAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Connection', 'Document', 'Entity', 'Field', 'Kind', 'Member', 'Type'];
+        return ['Connection', 'Document', 'Entity', 'Field', 'Import', 'Kind', 'Member', 'Type'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -137,7 +152,8 @@ export class TinyDslAstReflection extends AbstractAstReflection {
                 return {
                     name: 'Document',
                     mandatory: [
-                        { name: 'entities', type: 'array' }
+                        { name: 'entities', type: 'array' },
+                        { name: 'imports', type: 'array' }
                     ]
                 };
             }

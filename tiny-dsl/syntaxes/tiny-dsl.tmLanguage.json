@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.tiny-dsl",
-      "match": "\\b(Bool|Entity|Int|String|as|consistOf|has|partOf)\\b"
+      "match": "\\b(Bool|Entity|Int|String|as|consistOf|has|import|partOf)\\b"
     },
     {
       "name": "string.quoted.double.tiny-dsl",

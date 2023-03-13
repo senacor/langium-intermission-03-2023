@@ -1,0 +1,7 @@
+
+
+Entity Kredit {
+    Int Saldo
+}
+
+
