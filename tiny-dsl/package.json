@@ -20,7 +20,16 @@
             "language": "tiny-dsl",
             "scopeName": "source.tiny-dsl",
             "path": "./syntaxes/tiny-dsl.tmLanguage.json"
-        }]
+        }],
+        "commands": [{
+            "command": "tinydsl.generateSql",
+            "title": "Generate TinyDSL SQL DDL"
+        }],
+        "menus": {
+            "editor/title": [{
+                "command": "tinydsl.generateSql"
+            }]
+        }
     },
     "activationEvents": [
         "onLanguage:tiny-dsl"
