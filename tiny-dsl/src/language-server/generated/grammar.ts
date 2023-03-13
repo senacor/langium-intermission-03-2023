@@ -187,11 +187,16 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
         "$type": "Group",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@5"
-            },
-            "arguments": []
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@5"
+              },
+              "arguments": []
+            }
           },
           {
             "$type": "Assignment",

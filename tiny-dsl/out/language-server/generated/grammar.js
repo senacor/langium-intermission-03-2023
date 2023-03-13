@@ -188,11 +188,16 @@ const TinyDslGrammar = () => loadedTinyDslGrammar !== null && loadedTinyDslGramm
         "$type": "Group",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@5"
-            },
-            "arguments": []
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@5"
+              },
+              "arguments": []
+            }
           },
           {
             "$type": "Assignment",
