@@ -3,7 +3,7 @@ grammar TinyDsl
 
 entry Document:
     (imports+=Import)*
-    
+
     (entities+=Entity)*;
 
 Import:
@@ -16,9 +16,10 @@ Entity:
     '}'
     ;
 
-Member:
+Member returns Member:
     Field | Connection
     ;
+interface Member extends NamedElement {}
 
 Field:
     type=Type name=ID
@@ -29,20 +30,18 @@ Type:
     ;
 
 Connection:
-    kind=Kind to=[Entity:ID] 'as' name=ID 
+    kind=Kind to=[Entity:ID] 'as' name=ID
     ;
 
 Kind:
     kindType = ('has' | 'consistOf' | 'partOf')
     ;
 
-interface NamedElement {
-    name: string
-}
-
 NamedElement returns NamedElement:
-    Entity | Member 
+    Entity | Member
     ;
+interface NamedElement { name: string }
+
 // QualifiedName returns string:
 //     ID ('.' ID)*
 //     ;

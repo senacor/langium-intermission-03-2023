@@ -1,6 +1,6 @@
 import { ValidationAcceptor, ValidationChecks } from "langium";
 
-import { Document, Entity, TinyDslAstType } from "./generated/ast";
+import { Document, Entity, NamedElement, TinyDslAstType } from "./generated/ast";
 
 import type { TinyDslServices } from "./tiny-dsl-module";
 
@@ -12,7 +12,7 @@ export function registerValidationChecks(services: TinyDslServices) {
     const validator = services.validation.TinyDslValidator;
     const checks: ValidationChecks<TinyDslAstType> = {
         Document: [validator.checkDocument_NoDuplicateEntities],
-        Entity: [validator.checkEntity_NameStartsWithCapital],
+        Entity: [validator.checkEntity_NameStartsWithCapital, validator.checkEntity_NoDuplicateMembers],
     };
     registry.register(checks, validator);
 }
@@ -21,6 +21,14 @@ export function registerValidationChecks(services: TinyDslServices) {
  * Implementation of custom validations.
  */
 export class TinyDslValidator {
+    checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
+        this.checkNoDuplicateElements(document.entities, "Duplicate entity", accept);
+    }
+
+    checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
+        this.checkNoDuplicateElements(entity.members, "Duplicate member", accept);
+    }
+
     checkEntity_NameStartsWithCapital(entity: Entity, accept: ValidationAcceptor): void {
         if (entity.name) {
             const firstChar = entity.name.substring(0, 1);
@@ -29,21 +37,16 @@ export class TinyDslValidator {
             }
         }
     }
-    checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
-        //let duplicates = entity.members.groupBy((el) => el.name);
-    }
-    checkDocument_NoDuplicateEntities(doc: Document, accept: ValidationAcceptor) {
-        let duplicates = doc.entities
+
+    checkNoDuplicateElements(elements: NamedElement[], errorMsg: string, accept: ValidationAcceptor) {
+        let duplicates = elements
             .groupBy((el) => el.name)
             .valuesArray()
             .filter((arr) => arr.length >= 2)
             .flat();
         for (let dup of duplicates) {
-            accept("error", `Duplicate entity [${dup.name}]`, { node: dup, property: "name" });
+            accept("error", `${errorMsg} [${dup.name}]`, { node: dup, property: "name" });
         }
-    }
-    checkNoDuplicateElements<T>(elements: T[], accept: ValidationAcceptor) {
-        //let duplicates = elements.groupBy((el) => el.name);
     }
 }
 
