@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
  */
 export function generateSqlForTinyDslFiles() {
     vscode.workspace.findFiles('**/*.tinydsl').then((files) => {
-        generateSqlFiles(files.map(file => file.fsPath), vscode.workspace.rootPath + '/generated')
+        generateSqlFiles(files.map(file => file.fsPath), vscode.workspace.rootPath || '.', '/generated')
             .map(result => result
                 .then(filename => vscode.window.showInformationMessage(`File ${filename} generated`))
                 .catch(error => vscode.window.showErrorMessage(error))
@@ -25,14 +25,15 @@ export function generateSqlForTinyDslFiles() {
 /**
  * Generates SQL output for an array of TinyDSL files.
  * @param inputFiles The array of TinyDSL files.
- * @param outputDir The output directory where to generate the files to.
+ * @param workspaceDir The workspace directory.
+ * @param outputDir The output directory within the workspace where to generate the files to.
  */
-export function generateSqlFiles(inputFiles: string[], outputDir: string): Promise<String>[] {
+export function generateSqlFiles(inputFiles: string[], workspaceDir: string, outputDir: string): Promise<String>[] {
     const services = createTinyDslServices(NodeFileSystem).TinyDsl;
     const models = extractAstNodes<Document>(inputFiles, services);
     return models.map(model$ => {
         const index = models.indexOf(model$);
-        return model$.then(model => generateSqlFile(model, inputFiles[index], outputDir));
+        return model$.then(model => generateSqlFile(model, inputFiles[index], workspaceDir, outputDir));
     });
 };
 
@@ -40,11 +41,12 @@ export function generateSqlFiles(inputFiles: string[], outputDir: string): Promi
  * Generates one SQL file for a given Document.
  * @param document  The Document
  * @param filePath The file location.
- * @param destination The destination directory.
+ * @param workspaceDir The workspace directory.
+ * @param outputDir The output directory within the workspace where to generate the files to.
  * @returns The path of the generated output file within the given destination
  */
-export function generateSqlFile(document: Document, filePath: string, destination: string): string {
-    const data = extractDestinationAndName(filePath, destination);
+export function generateSqlFile(document: Document, filePath: string, workspaceDir: string, outputDir: string): string {
+    const data = extractDestinationAndName(filePath, workspaceDir, outputDir);
     const generatedFilePath = `${path.join(data.destination, data.name)}.sql`;
     const fileNode = new CompositeGeneratorNode();
 

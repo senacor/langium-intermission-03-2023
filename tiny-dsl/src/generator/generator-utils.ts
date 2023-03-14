@@ -41,10 +41,19 @@ export function extractAstNodes<T extends AstNode>(fileNames: string[], services
     return extractDocuments(fileNames, services).map(document => document.then(document => document.parseResult?.value as T));
 }
 
-export function extractDestinationAndName(filePath: string, destination: string): FilePathData {
-    filePath = path.basename(filePath, path.extname(filePath)).replace(/[.-]/g, '');
+/**
+ * Computes the targed director for code generation based on the path of the given input file, the workspace directory and the destination director (e.g., 'generated')
+ * @param fielPath The path of the input file.
+ * @param workspaceDir The workspace directory.
+ * @param outputDir The output directory within the workspace where to generate the files to.
+ */
+export function extractDestinationAndName(filePath: string, workspaceDir: string, outputDir: string): FilePathData {
+    /* Not the niciest soluition, but works (at least on Windows ...)
+     * Assumes that the workspace path is a prefix of the file path and that each file ends with '.tinydsl' */
+    filePath = filePath.substring(workspaceDir.length, filePath.length - '.tinydsl'.length);
+    const destination = workspaceDir + '\\' + outputDir + path.dirname(filePath);
     return {
-        destination: destination ?? path.join(path.dirname(filePath), 'generated'),
+        destination: destination,
         name: path.basename(filePath)
     };
 }
