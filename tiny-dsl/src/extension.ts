@@ -4,6 +4,7 @@ import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
 import { generateSqlForTinyDslFiles } from './generator/sql-generator';
+import { TinyDslDocumentSymbolProvider } from './outline/tiny-dsl-document-symbol-provider';
 
 
 let client: LanguageClient;
@@ -16,8 +17,17 @@ export type GenerateOptions = {
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
 
+    /* Register command for code generation. */
     let disposable = vscode.commands.registerCommand('tinydsl.generateSql', () => generateSqlForTinyDslFiles());
     context.subscriptions.push(disposable);
+
+    /* Register SymbolProvider for code outline. */
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSymbolProvider(
+            {scheme: "file", language: "tiny-dsl"}, 
+            new TinyDslDocumentSymbolProvider()
+        )
+    );
 }
 
 // This function is called when the extension is deactivated.
