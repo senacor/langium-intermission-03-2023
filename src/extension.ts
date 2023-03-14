@@ -4,8 +4,7 @@ import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
 import { generateSqlForTinyDslFiles } from './generator/sql-generator';
-import { TinyDslDocumentSymbolProvider } from './outline/tiny-dsl-document-symbol-provider';
-
+import { DeprecatedTinyDslDocumentSymbolProvider } from './outline/deprecated-tiny-dsl-document-symbol-provider';
 
 let client: LanguageClient;
 
@@ -25,7 +24,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.languages.registerDocumentSymbolProvider(
             {scheme: "file", language: "tiny-dsl"}, 
-            new TinyDslDocumentSymbolProvider()
+            new DeprecatedTinyDslDocumentSymbolProvider()
         )
     );
 }
