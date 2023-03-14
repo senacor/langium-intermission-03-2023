@@ -2,6 +2,7 @@ import {
     createDefaultModule, createDefaultSharedModule, DefaultSharedModuleContext, inject,
     LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
 } from 'langium';
+import { TinyDslDocumentSymbolProvider } from '../outline/tiny-dsl-document-symbol-provicer';
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
 import { TinyDslGeneratedModule, TinyDslGeneratedSharedModule } from './generated/module';
 import { TinyDslValidator, registerValidationChecks } from './tiny-dsl-validator';
@@ -29,10 +30,12 @@ export type TinyDslServices = LangiumServices & TinyDslAddedServices
 export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & TinyDslAddedServices> = {
     validation: {
         TinyDslValidator: () => new TinyDslValidator()
-    }
-    ,
+    },
     references: {
         ScopeComputation: (services) => new TinyDslScopeComputation(services)
+    },
+    lsp: {
+        DocumentSymbolProvider: (services) => new TinyDslDocumentSymbolProvider(services)
     }
 };
 

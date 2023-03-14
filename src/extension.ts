@@ -21,12 +21,12 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(disposable);
 
     /* Register SymbolProvider for code outline. */
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSymbolProvider(
-            {scheme: "file", language: "tiny-dsl"}, 
-            new DeprecatedTinyDslDocumentSymbolProvider()
-        )
-    );
+    // context.subscriptions.push(
+    //     vscode.languages.registerDocumentSymbolProvider(
+    //         {scheme: "file", language: "tiny-dsl"}, 
+    //         new DeprecatedTinyDslDocumentSymbolProvider()
+    //     )
+    // );
 }
 
 // This function is called when the extension is deactivated.
