@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 /**
  * Generates SQL files for all TinyDSL files within the current workspace.
  */
-export function generateSqlForTinyDslFiles() {
+export function generateSqlForAllTinyDslFiles() {
     vscode.workspace.findFiles('**/*.tinydsl').then((files) => {
         generateSqlFiles(files.map(file => file.fsPath), vscode.workspace.rootPath || '.', '/generated')
             .map(result => result
@@ -20,6 +20,18 @@ export function generateSqlForTinyDslFiles() {
     }, () => {
         vscode.window.showWarningMessage('No tinydsl files for code generation found.');
     });
+}
+
+/**
+ * Generates SQL generation for a given file.
+ * @param fileName The name of the file.
+ */
+export function generateSqlForDslFile(fileName: string) {
+    generateSqlFiles([fileName], vscode.workspace.rootPath || '.', '/generated')
+        .map(result => result
+            .then(filename => vscode.window.showInformationMessage(`File ${filename} generated`))
+            .catch(error => vscode.window.showErrorMessage(error))
+        );
 }
 
 /**
@@ -99,5 +111,18 @@ function mapDatatype(datatype: 'Bool' | 'Int' | 'String'): string {
         case 'String':
         default:
             return 'VARCHAR2(256)';
+    }
+}
+
+/**
+ * Deletes the generated SQL file (if any) for a given TinyDSL file.
+ * @param fileName The name of the file.
+ */
+export function deleteSqlForDslFile(fileName: string) {
+    const data = extractDestinationAndName(fileName, vscode.workspace.rootPath || '.', '/generated');
+    const generatedFilePath = `${path.join(data.destination, data.name)}.sql`;
+
+    if (fs.existsSync(generatedFilePath)) {
+        fs.rmSync(generatedFilePath);
     }
 }

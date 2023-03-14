@@ -3,7 +3,7 @@ import * as path from 'path';
 import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
-import { generateSqlForTinyDslFiles } from './generator/sql-generator';
+import { deleteSqlForDslFile, generateSqlForAllTinyDslFiles, generateSqlForDslFile } from './generator/sql-generator';
 import { DeprecatedTinyDslDocumentSymbolProvider } from './outline/deprecated-tiny-dsl-document-symbol-provider';
 
 let client: LanguageClient;
@@ -16,17 +16,32 @@ export type GenerateOptions = {
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
 
-    /* Register command for code generation. */
-    let disposable = vscode.commands.registerCommand('tinydsl.generateSql', () => generateSqlForTinyDslFiles());
-    context.subscriptions.push(disposable);
+    registerSqlGenerationCommand(context);
+    registerAutoSqlGenerationOnFileChanges(context);
 
     /* Register SymbolProvider for code outline. */
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSymbolProvider(
-            {scheme: "file", language: "tiny-dsl"}, 
-            new DeprecatedTinyDslDocumentSymbolProvider()
-        )
-    );
+    // context.subscriptions.push(
+    //     vscode.languages.registerDocumentSymbolProvider(
+    //         {scheme: "file", language: "tiny-dsl"}, 
+    //         new DeprecatedTinyDslDocumentSymbolProvider()
+    //     )
+    // );
+}
+
+function registerSqlGenerationCommand(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('tinydsl.generateSql', () => generateSqlForAllTinyDslFiles());
+    context.subscriptions.push(disposable);
+    return disposable;
+}
+
+function registerAutoSqlGenerationOnFileChanges(context: vscode.ExtensionContext) {
+    const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.tinydsl');
+    let disposable = fileSystemWatcher.onDidCreate((uri) => generateSqlForDslFile(uri.fsPath));
+    context.subscriptions.push(disposable);
+    disposable = fileSystemWatcher.onDidChange((uri) => generateSqlForDslFile(uri.fsPath));
+    context.subscriptions.push(disposable);
+    disposable = fileSystemWatcher.onDidDelete((uri) => deleteSqlForDslFile(uri.fsPath));
+    context.subscriptions.push(disposable);
 }
 
 // This function is called when the extension is deactivated.
