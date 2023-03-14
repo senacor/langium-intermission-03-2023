@@ -1,6 +1,6 @@
+package mein.test.namespace
 
-
-import "otherFolder/Kredit" as Kredit
+import mein.test.namespace.otherFolder.Kredit
 
 
 
@@ -8,6 +8,12 @@ Entity Kunde {
     String Name
     Int Alter
 
-    has Kredit as Kontrahent
+    has mein.test.namespace.otherFolder.Kredit as Kontrahent
+    has Zins as Zins
+}
+
+
+
+Entity Zins {
 }
 

@@ -2,6 +2,7 @@ import {
     createDefaultModule, createDefaultSharedModule, DefaultSharedModuleContext, inject,
     LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
 } from 'langium';
+import { TinyDslScopeComputation } from '../scoping/scope-computation';
 import { TinyDslGeneratedModule, TinyDslGeneratedSharedModule } from './generated/module';
 import { TinyDslValidator, registerValidationChecks } from './tiny-dsl-validator';
 
@@ -29,6 +30,10 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     validation: {
         TinyDslValidator: () => new TinyDslValidator()
     }
+    ,
+    references: {
+        ScopeComputation: (services) => new TinyDslScopeComputation(services)
+    }
 };
 
 /**
@@ -50,6 +55,7 @@ export function createTinyDslServices(context: DefaultSharedModuleContext): {
     shared: LangiumSharedServices,
     TinyDsl: TinyDslServices
 } {
+    console.log("createServices")
     const shared = inject(
         createDefaultSharedModule(context),
         TinyDslGeneratedSharedModule

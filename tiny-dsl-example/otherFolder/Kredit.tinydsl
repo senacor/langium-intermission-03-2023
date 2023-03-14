@@ -1,4 +1,4 @@
-
+package mein.test.namespace.otherFolder
 
 Entity Kredit {
     Int Saldo

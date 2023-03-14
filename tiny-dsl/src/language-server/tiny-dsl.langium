@@ -2,12 +2,14 @@ grammar TinyDsl
 
 
 entry Document:
+    'package' package=QualifiedName
+
     (imports+=Import)*
     
     (entities+=Entity)*;
 
 Import:
-    'import' path=STRING 'as' id=ID
+    'import' path=QualifiedName
     ;
 
 Entity:
@@ -29,7 +31,7 @@ Type:
     ;
 
 Connection:
-    kind=Kind to=[Entity:ID] 'as' name=ID 
+    kind=Kind to=[Entity:QualifiedName] 'as' name=ID 
     ;
 
 Kind:
@@ -43,9 +45,10 @@ interface NamedElement {
 NamedElement returns NamedElement:
     Entity | Member 
     ;
-// QualifiedName returns string:
-//     ID ('.' ID)*
-//     ;
+
+QualifiedName returns string:
+    ID ('.' ID)*
+    ;
 
 
 hidden terminal WS: /\s+/;

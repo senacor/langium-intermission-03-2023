@@ -1,4 +1,4 @@
-
+package mein.test.namespace
 
 Entity Kredit {
     Int Saldo

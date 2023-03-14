@@ -14,6 +14,8 @@ export function isMember(item: unknown): item is Member {
     return reflection.isInstance(item, Member);
 }
 
+export type QualifiedName = string;
+
 export interface Connection extends AstNode {
     readonly $container: Entity;
     readonly $type: 'Connection';
@@ -32,25 +34,13 @@ export interface Document extends AstNode {
     readonly $type: 'Document';
     entities: Array<Entity>
     imports: Array<Import>
+    package: QualifiedName
 }
 
 export const Document = 'Document';
 
 export function isDocument(item: unknown): item is Document {
     return reflection.isInstance(item, Document);
-}
-
-export interface Entity extends AstNode {
-    readonly $container: Document;
-    readonly $type: 'Entity';
-    members: Array<Member>
-    name: string
-}
-
-export const Entity = 'Entity';
-
-export function isEntity(item: unknown): item is Entity {
-    return reflection.isInstance(item, Entity);
 }
 
 export interface Field extends AstNode {
@@ -69,8 +59,7 @@ export function isField(item: unknown): item is Field {
 export interface Import extends AstNode {
     readonly $container: Document;
     readonly $type: 'Import';
-    id: string
-    path: string
+    path: QualifiedName
 }
 
 export const Import = 'Import';
@@ -91,6 +80,18 @@ export function isKind(item: unknown): item is Kind {
     return reflection.isInstance(item, Kind);
 }
 
+export interface NamedElement extends AstNode {
+    readonly $container: Document;
+    readonly $type: 'Entity' | 'NamedElement';
+    name: string
+}
+
+export const NamedElement = 'NamedElement';
+
+export function isNamedElement(item: unknown): item is NamedElement {
+    return reflection.isInstance(item, NamedElement);
+}
+
 export interface Type extends AstNode {
     readonly $container: Field;
     readonly $type: 'Type';
@@ -103,6 +104,19 @@ export function isType(item: unknown): item is Type {
     return reflection.isInstance(item, Type);
 }
 
+export interface Entity extends NamedElement {
+    readonly $container: Document;
+    readonly $type: 'Entity';
+    members: Array<Member>
+    name: string
+}
+
+export const Entity = 'Entity';
+
+export function isEntity(item: unknown): item is Entity {
+    return reflection.isInstance(item, Entity);
+}
+
 export interface TinyDslAstType {
     Connection: Connection
     Document: Document
@@ -111,13 +125,14 @@ export interface TinyDslAstType {
     Import: Import
     Kind: Kind
     Member: Member
+    NamedElement: NamedElement
     Type: Type
 }
 
 export class TinyDslAstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Connection', 'Document', 'Entity', 'Field', 'Import', 'Kind', 'Member', 'Type'];
+        return ['Connection', 'Document', 'Entity', 'Field', 'Import', 'Kind', 'Member', 'NamedElement', 'Type'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -125,6 +140,9 @@ export class TinyDslAstReflection extends AbstractAstReflection {
             case Connection:
             case Field: {
                 return this.isSubtype(Member, supertype);
+            }
+            case Entity: {
+                return this.isSubtype(NamedElement, supertype);
             }
             default: {
                 return false;

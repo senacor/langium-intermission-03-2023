@@ -19,6 +19,22 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
         "$type": "Group",
         "elements": [
           {
+            "$type": "Keyword",
+            "value": "package"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "package",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@9"
+              },
+              "arguments": []
+            }
+          },
+          {
             "$type": "Assignment",
             "feature": "imports",
             "operator": "+=",
@@ -69,22 +85,6 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@11"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "as"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "id",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
                 "$ref": "#/rules@9"
               },
               "arguments": []
@@ -116,7 +116,7 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@9"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
@@ -205,7 +205,7 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@9"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
@@ -299,7 +299,7 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@9"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
@@ -337,6 +337,78 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
             }
           ]
         }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NamedElement",
+      "returnType": {
+        "$ref": "#/interfaces@0"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@2"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@3"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "QualifiedName",
+      "dataType": "string",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@11"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "."
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@11"
+                },
+                "arguments": []
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -410,10 +482,27 @@ export const TinyDslGrammar = (): Grammar => loadedTinyDslGrammar ?? (loadedTiny
       "fragment": false
     }
   ],
+  "interfaces": [
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "name": "name",
+          "type": {
+            "$type": "SimpleType",
+            "primitiveType": "string"
+          },
+          "isOptional": false
+        }
+      ],
+      "name": "NamedElement",
+      "superTypes": []
+    }
+  ],
   "definesHiddenTokens": false,
   "hiddenTokens": [],
   "imports": [],
-  "interfaces": [],
   "types": [],
   "usedGrammars": []
 }`));
