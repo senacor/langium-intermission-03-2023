@@ -14,6 +14,7 @@ This folder contains all necessary files for your language extension.
 * `src/cli/index.ts` - the entry point of the command line interface (CLI) of your language.
 * `src/cli/generator.ts` - the code generator used by the CLI to write output files from DSL documents.
 * `src/cli/cli-util.ts` - utility code for the CLI.
+* `examples` - folder containing sample `.tinydsl` files.
 
 ## Get up and running straight away
 
@@ -21,10 +22,10 @@ This folder contains all necessary files for your language extension.
 2. Run `npm install` to download all project dependencies.
 3. Run `npm run langium:generate` to generate TypeScript code from the grammar definition.
 4. Run `npm run build` to compile all TypeScript code.
-5. Press `F5` to open a new window with your extension loaded.
-6. Create a new file with a file name suffix matching your language.
+5. Press `F5` to open a new window with your extension loaded (aka VS Code Debug session).
+6. Open a file inside `examples` folder or create a new file with file name suffix `.tinydsl`.
 7. Verify that syntax highlighting, validation, completion etc. are working as expected.
-8. Run `./bin/cli` to see options for the CLI; `./bin/cli generate <file>` generates code for a given DSL file.
+8. Example SQL files are generated after saving any `.tinydsl`-Files (or can be triggered manually via the menu of the `.tyndsl`-Editor).
 
 ## Make changes
 
@@ -41,6 +42,12 @@ This folder contains all necessary files for your language extension.
    * Switch to launch configuration `Debug Extension` in the dropdown menu in the upper left corner.
 2. Set breakpoints as you like in any TypeScript file.
 3. Press `F5` to run VSCode Debug instance.
+
+## Test
+
+* Add your `**.test.js` file to `test` folder.
+* Run `npm test`.
+* Alternatively, you can use VS Code extension [Vitest](https://marketplace.visualstudio.com/items?itemName=ZixuanChen.vitest-explorer) to run the tests.
 
 ## Install your extension
 
