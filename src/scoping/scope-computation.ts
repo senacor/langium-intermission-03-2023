@@ -48,7 +48,7 @@ export class TinyDslScopeComputation extends DefaultScopeComputation {
 
         if (isDocument(doc)) {
             if (isEntity(node)) {
-                return `${doc.package}/${node.name}`;
+                return `${doc.package}.${node.name}`;
             }
         }
 

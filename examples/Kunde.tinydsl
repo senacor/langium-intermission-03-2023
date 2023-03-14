@@ -8,7 +8,7 @@ Entity Kunde {
     String Name
     Int Alter
 
-    has mein.test.namespace.otherFolder.Kredit as Kontrahent
+    has mein.test.namespace.otherFolder.Kredit as Kontrahent 
     has Zins as Zins
 }
 
