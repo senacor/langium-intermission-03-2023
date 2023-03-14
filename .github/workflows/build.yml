@@ -5,17 +5,21 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ $default-branch ]
-    #branches-ignore: [ "main" ]
+    branches: [ " " ] # TODO: Insert "**" to enable
+    paths:
+    - src/**
+    - test/**
   pull_request:
-    #branches: [ $default-branch ]
+    branches: [ "**" ]
+  workflow_dispatch:
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x] #[14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -26,5 +30,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
+    - run: npm run build
+    - run: npm run lint
     - run: npm test
+      if: always()
