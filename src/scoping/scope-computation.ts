@@ -18,8 +18,6 @@ export class TinyDslScopeComputation extends DefaultScopeComputation {
         for (const childNode of streamAllContents(document.parseResult.value)) {
             if (isEntity(childNode)) {
                 const fullyQualifiedName = this.getQualifiedName(childNode);
-                // `descriptions` is our `AstNodeDescriptionProvider` defined in `DefaultScopeComputation`
-                // It allows us to easily create descriptions that point to elements using a name.
                 exportedDescriptions.push(this.descriptions.createDescription(childNode, fullyQualifiedName, document));
             }
         }

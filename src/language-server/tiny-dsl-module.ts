@@ -3,6 +3,7 @@ import {
     LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
 } from 'langium';
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
+import { TinyDslScopeProvider } from '../scoping/scope-provider';
 import { TinyDslGeneratedModule, TinyDslGeneratedSharedModule } from './generated/module';
 import { TinyDslValidator, registerValidationChecks } from './tiny-dsl-validator';
 
@@ -32,7 +33,8 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     }
     ,
     references: {
-        ScopeComputation: (services) => new TinyDslScopeComputation(services)
+        ScopeComputation: (services) => new TinyDslScopeComputation(services),
+        ScopeProvider: (services) => new TinyDslScopeProvider(services)
     }
 };
 

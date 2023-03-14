@@ -1,6 +1,7 @@
 package mein.test.namespace
 
 import mein.test.namespace.otherFolder.Kredit
+import mein.test.namespace.otherFolder.Aval
 
 
 
@@ -8,7 +9,10 @@ Entity Kunde {
     String Name
     Int Alter
 
-    has mein.test.namespace.otherFolder.Kredit as Kontrahent 
+    has Kredit as Kontrahent1 
+    has mein.test.namespace.otherFolder.Kredit as Kontrahent2
+    has Aval as Aval1
+    has mein.test.namespace.otherFolder.Aval as Aval2
     has Zins as Zins
 }
 
