@@ -5,7 +5,7 @@ entry Document:
     'package' package=QualifiedName
 
     (imports+=Import)*
-    
+
     (entities+=Entity)*;
 
 Import:
@@ -18,9 +18,10 @@ Entity:
     '}'
     ;
 
-Member:
+Member returns Member:
     Field | Connection
     ;
+interface Member extends NamedElement {}
 
 Field:
     type=Type name=ID
@@ -38,12 +39,8 @@ Kind:
     kindType = ('has' | 'consistOf' | 'partOf')
     ;
 
-interface NamedElement {
-    name: string
-}
-
 NamedElement returns NamedElement:
-    Entity | Member 
+    Entity | Member
     ;
 
 QualifiedName returns string:

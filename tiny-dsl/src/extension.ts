@@ -3,12 +3,21 @@ import * as path from 'path';
 import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
+import { generateSqlForTinyDslFiles } from './generator/sql-generator';
+
 
 let client: LanguageClient;
+
+export type GenerateOptions = {
+    destination?: string;
+}
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
+
+    let disposable = vscode.commands.registerCommand('tinydsl.generateSql', () => generateSqlForTinyDslFiles());
+    context.subscriptions.push(disposable);
 }
 
 // This function is called when the extension is deactivated.
