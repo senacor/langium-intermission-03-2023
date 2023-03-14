@@ -3,7 +3,7 @@ import * as path from 'path';
 import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
-import { generateSqlForTinyDslFiles } from './generator/generator-utils';
+import { generateSqlForTinyDslFiles } from './generator/sql-generator';
 
 
 let client: LanguageClient;

@@ -1,10 +1,49 @@
 import fs from 'fs';
 import { CompositeGeneratorNode, NL, toString } from 'langium';
+import { NodeFileSystem } from 'langium/node';
 import path from 'path';
 import { Connection, Document, Entity, Field, isConnection, isField } from '../language-server/generated/ast';
-import { extractDestinationAndName } from './generator-utils';
+import { createTinyDslServices } from '../language-server/tiny-dsl-module';
+import { extractAstNodes, extractDestinationAndName } from './generator-utils';
+import * as vscode from 'vscode';
 
-export function generateSqlFile(document: Document, filePath: string, destination: string | undefined): string {
+/**
+ * Generates SQL files for all TinyDSL files within the current workspace.
+ */
+export function generateSqlForTinyDslFiles() {
+    vscode.workspace.findFiles('**/*.tinydsl').then((files) => {
+        generateSqlFiles(files.map(file => file.fsPath), vscode.workspace.rootPath + '/generated')
+            .map(result => result
+                .then(filename => vscode.window.showInformationMessage(`File ${filename} generated`))
+                .catch(error => vscode.window.showErrorMessage(error))
+            );
+    }, () => {
+        vscode.window.showWarningMessage('No tinydsl files for code generation found.');
+    });
+}
+
+/**
+ * Generates SQL output for an array of TinyDSL files.
+ * @param inputFiles The array of TinyDSL files.
+ * @param outputDir The output directory where to generate the files to.
+ */
+export function generateSqlFiles(inputFiles: string[], outputDir: string): Promise<String>[] {
+    const services = createTinyDslServices(NodeFileSystem).TinyDsl;
+    const models = extractAstNodes<Document>(inputFiles, services);
+    return models.map(model$ => {
+        const index = models.indexOf(model$);
+        return model$.then(model => generateSqlFile(model, inputFiles[index], outputDir));
+    });
+};
+
+/**
+ * Generates one SQL file for a given Document.
+ * @param document  The Document
+ * @param filePath The file location.
+ * @param destination The destination directory.
+ * @returns The path of the generated output file within the given destination
+ */
+export function generateSqlFile(document: Document, filePath: string, destination: string): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.sql`;
     const fileNode = new CompositeGeneratorNode();
@@ -18,6 +57,11 @@ export function generateSqlFile(document: Document, filePath: string, destinatio
     return generatedFilePath;
 }
 
+/**
+ * Generates SQL for one given Entity.
+ * @param entity The Entity.
+ * @param output The CompositeGeneratorNode to generate the output to.
+ */
 function entityToSql(entity: Entity, output: CompositeGeneratorNode) {
 
     output.append(`CREATE TABLE ${entity.name.toLowerCase()} (`, NL);
@@ -39,6 +83,11 @@ function entityToSql(entity: Entity, output: CompositeGeneratorNode) {
     output.append(');', NL, NL);
 }
 
+/**
+ * Maps a Datatype to an SQL type.
+ * @param datatype The Datatype.
+ * @returns The corresponding SQL type (as a String).
+ */
 function mapDatatype(datatype: 'Bool' | 'Int' | 'String'): string {
     switch (datatype) {
         case 'Bool':
