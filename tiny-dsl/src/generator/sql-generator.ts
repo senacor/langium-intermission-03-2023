@@ -2,14 +2,14 @@ import fs from 'fs';
 import { CompositeGeneratorNode, NL, toString } from 'langium';
 import path from 'path';
 import { Connection, Document, Entity, Field, isConnection, isField } from '../language-server/generated/ast';
-import { extractDestinationAndName } from '../cli/cli-util';
+import { extractDestinationAndName } from './generator-utils';
 
 export function generateSqlFile(document: Document, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.sql`;
     const fileNode = new CompositeGeneratorNode();
 
-    document.entities.forEach(entity => entityToOutput(entity, fileNode));
+    document.entities.forEach(entity => entityToSql(entity, fileNode));
 
     if (!fs.existsSync(data.destination)) {
         fs.mkdirSync(data.destination, { recursive: true });
@@ -18,7 +18,7 @@ export function generateSqlFile(document: Document, filePath: string, destinatio
     return generatedFilePath;
 }
 
-function entityToOutput(entity: Entity, output: CompositeGeneratorNode) {
+function entityToSql(entity: Entity, output: CompositeGeneratorNode) {
 
     output.append(`CREATE TABLE ${entity.name.toLowerCase()} (`, NL);
     output.append(`  ${entity.name.toLowerCase()}_id NUMBER(16, 0) PRIMARY KEY`, NL);
