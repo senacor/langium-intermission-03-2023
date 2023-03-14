@@ -5,10 +5,12 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
-    #branches-ignore: [ "master" ]
+    branches: [ " " ] # TODO: Insert "**" to enable
+    paths:
+    - src/**
+    - test/**
   pull_request:
-    #branches: [ $default-branch ]
+    branches: [ "**" ]
   workflow_dispatch:
 
 
