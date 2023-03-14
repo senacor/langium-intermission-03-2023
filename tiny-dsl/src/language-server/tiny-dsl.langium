@@ -21,6 +21,11 @@ Entity:
 Member returns Member:
     Field | Connection
     ;
+
+interface NamedElement {
+    name : string
+}
+
 interface Member extends NamedElement {}
 
 Field:

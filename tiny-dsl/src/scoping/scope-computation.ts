@@ -15,7 +15,6 @@ export class TinyDslScopeComputation extends DefaultScopeComputation {
      */
     override async computeExports(document: LangiumDocument): Promise<AstNodeDescription[]> {
         const exportedDescriptions: AstNodeDescription[] = [];
-        console.log("A")
         for (const childNode of streamAllContents(document.parseResult.value)) {
             if (isEntity(childNode)) {
                 const fullyQualifiedName = this.getQualifiedName(childNode);
