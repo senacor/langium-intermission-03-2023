@@ -44,15 +44,15 @@
     },
     "main": "./out/extension.js",
     "scripts": {
-        "vscode:prepublish": "npm run build && npm run lint",
-        "build": "tsc -b tsconfig.json",
+        "build": "langium generate && tsc -b tsconfig.json",
         "watch": "tsc -b tsconfig.json --watch",
         "watch2": "npm run watch & npm run langium:watch",
-        "lint": "eslint src --ext ts",
         "langium:generate": "langium generate",
         "langium:watch": "langium generate --watch",
+        "lint": "eslint src --ext ts",
         "test": "vitest",
-        "test-ui": "vitest --ui"
+        "test-ui": "vitest --ui",
+        "vscode:prepublish": "npm run build && npm run lint"
     },
     "dependencies": {
         "chevrotain": "~10.4.2",
