@@ -25,7 +25,7 @@ This folder contains all necessary files for your language extension.
 5. Press `F5` to open a new window with your extension loaded (aka VS Code Debug session).
 6. Open a file inside `examples` folder or create a new file with file name suffix `.tinydsl`.
 7. Verify that syntax highlighting, validation, completion etc. are working as expected.
-8. Run `./bin/cli` to see options for the CLI; `./bin/cli generate <file>` generates code for a given DSL file.
+8. Example SQL files are generated after saving any `.tinydsl`-Files (or can be triggered manually via the menu of the `.tyndsl`-Editor).
 
 ## Make changes
 
