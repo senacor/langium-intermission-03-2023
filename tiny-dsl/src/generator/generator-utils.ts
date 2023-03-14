@@ -3,53 +3,50 @@ import { AstNode, LangiumDocument, LangiumServices } from 'langium';
 import { URI } from 'vscode-uri';
 import * as vscode from 'vscode';
 import { createTinyDslServices } from '../language-server/tiny-dsl-module';
-import { generateSqlFile } from './generator';
+import { generateSqlFile } from './sql-generator';
 import { NodeFileSystem } from 'langium/node';
 import { Document } from '../language-server/generated/ast';
 
 export function generateSqlForTinyDslFiles() {
     vscode.workspace.findFiles('**/*.tinydsl').then((files) => {
-        files.forEach(file => {
-            generateSql(file.fsPath, vscode.workspace.rootPath + '/generated');
-        });
+        generateSql(files.map(file => file.fsPath), vscode.workspace.rootPath + '/generated');
         vscode.window.showInformationMessage('Code generation completed');
     }, () => {
         vscode.window.showWarningMessage('No tinydsl files for code generation found.');
     });
 }
 
-const generateSql = async (inputFile: string, outputDir: string): Promise<void> => {
+const generateSql = async (inputFiles: string[], outputDir: string): Promise<void> => {
     const services = createTinyDslServices(NodeFileSystem).TinyDsl;
-    const model = await extractAstNode<Document>(inputFile, services);
-    generateSqlFile(model, inputFile, outputDir);
+    const model = await extractAstNodes<Document>(inputFiles, services);
+    for (let index = 0; index < model.length; index++) {
+        generateSqlFile(model[index], inputFiles[index], outputDir);
+    }
 };
 
-export async function extractDocument(fileName: string, services: LangiumServices): Promise<LangiumDocument> {
-    const extensions = services.LanguageMetaData.fileExtensions;
-    if (!extensions.includes(path.extname(fileName))) {
-        vscode.window.showErrorMessage(`Please choose a file with one of these extensions: ${extensions}.`);
-        process.exit(1);
-    }
-
-    const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(path.resolve(fileName)));
-    await services.shared.workspace.DocumentBuilder.build([document], { validationChecks: 'all' });
-
-    const validationErrors = (document.diagnostics ?? []).filter(e => e.severity === 1);
-    if (validationErrors.length > 0) {
-        vscode.window.showErrorMessage('There are validation errors:');
-        for (const validationError of validationErrors) {
-            vscode.window.showErrorMessage(
-                `line ${validationError.range.start.line + 1}: ${validationError.message} [${document.textDocument.getText(validationError.range)}]`
-            );
-        }
-        process.exit(1);
-    }
-
-    return document;
+export async function extractDocument(fileNames: string[], services: LangiumServices): Promise<LangiumDocument[]> {
+    return Promise.all(fileNames.map(fileName => {
+        const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(path.resolve(fileName)));
+        return services.shared.workspace.DocumentBuilder.build([document], { validationChecks: 'all' })
+            .then(() => {
+                const validationErrors = (document.diagnostics ?? []).filter(e => e.severity === 1);
+                if (validationErrors.length > 0) {
+                    vscode.window.showErrorMessage('There are validation errors:');
+                    for (const validationError of validationErrors) {
+                        vscode.window.showErrorMessage(
+                            `line ${validationError.range.start.line + 1}: ${validationError.message} [${document.textDocument.getText(validationError.range)}]`
+                        );
+                    }
+                    /* TODO Better error handling? */
+                    return document;
+                }
+                return document;
+            });
+    }).filter(document => !!document));
 }
 
-export async function extractAstNode<T extends AstNode>(fileName: string, services: LangiumServices): Promise<T> {
-    return (await extractDocument(fileName, services)).parseResult?.value as T;
+export async function extractAstNodes<T extends AstNode>(fileNames: string[], services: LangiumServices): Promise<T[]> {
+    return (await (extractDocument(fileNames, services))).flatMap(document => document.parseResult?.value as T);
 }
 
 interface FilePathData {
