@@ -1,5 +1,6 @@
 import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
 
+import { satisfies } from '../utils/types';
 import { Document, Entity, NamedElement, TinyDslAstType } from './generated/ast';
 
 import type { TinyDslServices } from './tiny-dsl-module';
@@ -17,16 +18,11 @@ export function registerValidationChecks(services: TinyDslServices) {
     registry.register(checks, validator);
 }
 
-export interface Issue {
-    code: string;
-    msg: string;
-}
-
-export const Issues: { [key: string]: Issue } = {
+export const Issues = satisfies<Record<string, Issue>>()({
     Document_DuplicateEntities: { code: 'Document.DuplicateEntities', msg: 'Duplicate entity' },
     Entity_DuplicateMembers: { code: 'Entity.DuplicateMembers', msg: 'Duplicate member' },
     Entity_NameNotCapitalized: { code: 'Entity.NameNotCapitalized', msg: 'Entity name should start with a capital.' },
-};
+});
 
 /**
  * Implementation of custom validations.
@@ -87,3 +83,9 @@ Array.prototype.groupBy = function (keyFn) {
 Map.prototype.valuesArray = function () {
     return Array.from(this.values());
 };
+
+// Utils
+export interface Issue {
+    code: string;
+    msg: string;
+}
