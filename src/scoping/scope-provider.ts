@@ -23,7 +23,7 @@ export class TinyDslScopeProvider extends DefaultScopeProvider {
         return importedElementScope;
     }
     
-    private isImported(descr : AstNodeDescription, imports : Set<String>): boolean {
+    private isImported(descr : AstNodeDescription, imports : Set<string>): boolean {
         const qn = descr.name
         return imports.has(qn)
     }

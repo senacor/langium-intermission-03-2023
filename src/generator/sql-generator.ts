@@ -40,14 +40,14 @@ export function generateSqlForDslFile(fileName: string) {
  * @param workspaceDir The workspace directory.
  * @param outputDir The output directory within the workspace where to generate the files to.
  */
-export function generateSqlFiles(inputFiles: string[], workspaceDir: string, outputDir: string): Promise<String>[] {
+export function generateSqlFiles(inputFiles: string[], workspaceDir: string, outputDir: string): Promise<string>[] {
     const services = createTinyDslServices(NodeFileSystem).TinyDsl;
     const models = extractAstNodes<Document>(inputFiles, services);
     return models.map(model$ => {
         const index = models.indexOf(model$);
         return model$.then(model => generateSqlFile(model, inputFiles[index], workspaceDir, outputDir));
     });
-};
+}
 
 /**
  * Generates one SQL file for a given Document.
