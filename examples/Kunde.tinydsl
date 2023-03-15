@@ -9,15 +9,14 @@ Entity Kunde {
     String Name
     Int Alter
 
-    has Kredit as Kontrahent1 
+    has Kredit as Kontrahent1
     has mein.test.namespace.otherFolder.Kredit as Kontrahent2
     has Aval as Aval1
     has mein.test.namespace.otherFolder.Aval as Aval2
     has Zins as Zins
 }
 
-
+Entity Kunde {}
 
 Entity Zins {
 }
-

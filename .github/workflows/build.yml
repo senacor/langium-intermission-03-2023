@@ -9,14 +9,15 @@ on:
     paths:
     - src/**
     - test/**
-  pull_request:
-    branches: [ "**" ]
+  release:
+    types: [ "published" ]
   workflow_dispatch:
 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: write-all
     strategy:
       matrix:
         node-version: [18.x] #[14.x, 16.x, 18.x]
@@ -32,5 +33,12 @@ jobs:
     - run: npm ci
     - run: npm run build
     - run: npm run lint
-    - run: npm test
+    - run: npm run test
       if: always()
+    - run: npm run package
+      if: always()
+    - name: Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+          files: "*.vsix"
