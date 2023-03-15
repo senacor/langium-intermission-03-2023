@@ -3,5 +3,8 @@ package mein.test.namespace.otherFolder
 Entity Kredit {
     Int Saldo
 }
+Entity Aval {
+    Int Saldo
+}
 
 

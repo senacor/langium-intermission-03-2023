@@ -1,46 +1,62 @@
-import { createLangiumGrammarServices, EmptyFileSystem, GrammarAST } from 'langium';
-import {
-    clearDocuments,
-    expectError,
-    expectIssue,
-    expectNoIssues,
-    expectWarning,
-    parseHelper,
-    validationHelper,
-    ValidationResult,
-} from 'langium/lib/test';
-import { afterEach, assert, beforeAll, describe, expect, test } from 'vitest';
-import { DiagnosticSeverity } from 'vscode-languageserver';
+import { describe, test } from 'vitest';
 
-import { Document, Entity, Member } from '../../src/language-server/generated/ast';
-import { createTinyDslServices } from '../../src/language-server/tiny-dsl-module';
 import { Issues } from '../../src/language-server/tiny-dsl-validator';
+import { expectError, expectNoIssues, expectWarning, validate } from '../../src/utils/test';
 
-const services = createTinyDslServices(EmptyFileSystem);
-const parse = parseHelper(services.TinyDsl);
-const locator = services.TinyDsl.workspace.AstNodeLocator;
-const validate = validationHelper<Document>(services.TinyDsl);
+describe('TinyDslValidator', () => {
+    describe('checkDocument', () => {
+        test('NoDuplicateEntities', async () => {
+            let validation = await validate(`
+            package test
+            Entity Customer {}`);
+            expectNoIssues(validation);
 
-test('Math.sqrt()', () => {
-    expect(Math.sqrt(4)).toBe(2);
-    expect(Math.sqrt(144)).toBe(12);
-    expect(Math.sqrt(2)).toBe(Math.SQRT2);
+            validation = await validate(`
+            package test
+            Entity Customer {}
+            Entity Customer {}`);
+            expectError(validation, Issues.Document_DuplicateEntities.code, {
+                node: validation.document.parseResult.value.entities[0],
+            });
+        });
+    });
+
+    describe('checkEntity', () => {
+        test('NoDuplicateMembers', async () => {
+            let validation = await validate(`
+            package test
+            Entity Customer {
+                String Name
+            }`);
+            expectNoIssues(validation);
+
+            validation = await validate(`
+            package test
+            Entity Customer {
+                String Name
+                Int Name
+            }`);
+            expectError(validation, Issues.Entity_DuplicateMembers.code, {
+                node: validation.document.parseResult.value.entities[0],
+            });
+        });
+
+        test('NameStartsWithCapital', async () => {
+            let validation = await validate(`
+            package test
+            Entity Customer {
+                String Name
+            }`);
+            expectNoIssues(validation);
+
+            validation = await validate(`
+            package test
+            Entity customer {
+                String Name
+            }`);
+            expectWarning(validation, Issues.Entity_NameNotCapitalized.code, {
+                node: validation.document.parseResult.value.entities[0],
+            });
+        });
+    });
 });
-
-// describe('TinyDSL Validator', () => {
-//     describe('checkEntity', () => {
-//         test('NameStartsWithCapital', async () => {
-//             const validationResult = await validate(`
-//             Entity Kunde {
-//                 String Name
-//                 Bool Alter
-//             }`);
-
-//             // should get a warning when basing declared types on inferred types
-//             expectError(validationResult, /Extending an inferred type is discouraged./, {
-//                 node: validationResult.document.parseResult.value.entities[0],
-//                 property: 'name',
-//             });
-//         });
-//     });
-// });
