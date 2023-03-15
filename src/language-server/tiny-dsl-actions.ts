@@ -14,14 +14,6 @@ import { Issues } from './tiny-dsl-validator';
 
 type ActionProviderFunction = (diagnostic: Diagnostic, document: LangiumDocument) => CodeAction;
 const actionProviders: { [key: string]: ActionProviderFunction[] } = {};
-/**
- * Quick Fix Decorator
- */
-function Fix(issueCode: string): any {
-    return function (target: object, propertyKey: string, propertyDescriptor: PropertyDescriptor) {
-        (actionProviders[issueCode] = actionProviders[issueCode] || []).push(propertyDescriptor.value);
-    };
-}
 
 export class TinyDslActionProvider implements CodeActionProvider {
     protected readonly reflection: AstReflection;
@@ -70,4 +62,13 @@ export class TinyDslActionProvider implements CodeActionProvider {
             },
         };
     }
+}
+
+/**
+ * Quick Fix Decorator
+ */
+function Fix(issueCode: string): any {
+    return function (target: object, propertyKey: string, propertyDescriptor: PropertyDescriptor) {
+        (actionProviders[issueCode] = actionProviders[issueCode] || []).push(propertyDescriptor.value);
+    };
 }
