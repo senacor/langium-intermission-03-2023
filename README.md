@@ -1,19 +1,18 @@
-# Welcome to your Langium VS Code Extension
+# TinyDSL - Example Langium DSL plugable to VS Code as Desktop and Web extension
 
 ## What's in the folder
 
-This folder contains all necessary files for your language extension.
+This folder contains all necessary files for the Tiny DSL language extension.
 
-* `package.json` - the manifest file in which you declare your language support.
+* `package.json` - the manifest file in which language support is declared.
 * `language-configuration.json` - the language configuration used in the VS Code editor, defining the tokens that are used for comments and brackets.
 * `src/extension.ts` - the main code of the extension, which is responsible for launching a language server and client.
-* `src/language-server/tiny-dsl.langium` -  the grammar definition of your language.
+* `src/web/extension.ts` - does the same when using the extension as a web extension for running VS code within a web browser
+* `src/language-server/tiny-dsl.langium` -  the grammar definition of the Tiny DSL language.
 * `src/language-server/main.ts` - the entry point of the language server process.
-* `src/language-server/tiny-dsl-module.ts` - the dependency injection module of your language implementation. Use this to register overridden and added services.
-* `src/language-server/tiny-dsl-validator.ts` - an example validator. You should change it to reflect the semantics of your language.
-* `src/cli/index.ts` - the entry point of the command line interface (CLI) of your language.
-* `src/cli/generator.ts` - the code generator used by the CLI to write output files from DSL documents.
-* `src/cli/cli-util.ts` - utility code for the CLI.
+* `src/language-server/tiny-dsl-module.ts` - the dependency injection module the Tiny DSL language implementation. Use this to register overridden and added services.
+* `src/language-server/tiny-dsl-validator.ts` - the Tiny DSL example validator.
+* `src/generator.ts` - an SQL code generator, generating SQL DDL scripts from Tiny DSL files
 * `examples` - folder containing sample `.tinydsl` files.
 
 ## Get up and running straight away
@@ -49,16 +48,11 @@ This folder contains all necessary files for your language extension.
 * Run `npm test`.
 * Alternatively, you can use VS Code extension [Vitest](https://marketplace.visualstudio.com/items?itemName=ZixuanChen.vitest-explorer) to run the tests.
 
-## Install your extension
-
-* To start using your extension with VS Code, copy it into the `<user home>/.vscode/extensions` folder and restart Code.
-* To share your extension with the world, read the [VS Code documentation](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) about publishing an extension.
-
 ## Web-based Development
 
 * VS Code extensions can be deployed as web extensions as well
 * Run `npm run compile-web` to compile the TinyDSL as a web-based extension.
-* Set the $extensionFolderPath variable to your workspace location (e.g., `$extensionFolderPath='C:\Dev\Langium\langium-intermission-02-2023'`).
+* Set the `$extensionFolderPath` variable to your workspace location (e.g., `$extensionFolderPath='C:\Dev\Langium\langium-intermission-02-2023'`).
 * Run `npx @vscode/test-web --extensionDevelopmentPath=$extensionFolderPath` to run VS Code as a local server at port 3000
 * Go to your browser and open <http://localhost:3000/>
 

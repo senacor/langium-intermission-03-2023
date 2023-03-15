@@ -1,7 +1,8 @@
 {
     "name": "tiny-dsl",
     "displayName": "tiny-dsl",
-    "description": "Please enter a brief description here",
+    "description": "Tiny DSL - An example language to define basic Entities and Relations",
+    "publisher": "Senacor AG",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.67.0"
