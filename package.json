@@ -1,10 +1,10 @@
 {
     "name": "tiny-dsl",
     "displayName": "TinyDSL",
-    "description": "Tiny Langium DSL by Senacor",
+    "description": "An example language to define basic Entities and Relations.",
     "version": "0.0.1",
-    "icon": "data/langium-logo.png",
     "publisher": "Senacor Technologies AG",
+    "icon": "./resources/senacor.png",
     "categories": ["Programming Languages"],
     "engines": {
         "vscode": "^1.67.0"
@@ -14,51 +14,66 @@
           "url": "https://github.com/senacor/langium-intermission-03-2023"
     },
     "contributes": {
-        "languages": [{
-            "id": "tiny-dsl",
-            "aliases": ["Tiny DSL", "tiny-dsl"],
-            "extensions": [".tinydsl"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "tiny-dsl",
-            "scopeName": "source.tiny-dsl",
-            "path": "./syntaxes/tiny-dsl.tmLanguage.json"
-        }],
-        "commands": [{
-            "command": "tinydsl.generateSql",
-            "title": "Generate TinyDSL SQL DDL"
-        }],
+        "languages": [
+            {
+                "id": "tiny-dsl",
+                "aliases": [
+                    "Tiny DSL",
+                    "tiny-dsl"
+                ],
+                "extensions": [
+                    ".tinydsl"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "tiny-dsl",
+                "scopeName": "source.tiny-dsl",
+                "path": "./syntaxes/tiny-dsl.tmLanguage.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "tinydsl.generateSql",
+                "title": "Generate TinyDSL SQL DDL"
+            }
+        ],
         "menus": {
-            "editor/title": [{
-                "command": "tinydsl.generateSql"
-            }]
+            "editor/title": [
+                {
+                    "command": "tinydsl.generateSql"
+                }
+            ]
         }
     },
     "activationEvents": [
         "onLanguage:tiny-dsl"
     ],
     "files": [
-        "bin",
         "out",
         "src"
     ],
-    "bin": {
-        "tiny-dsl-cli": "./bin/cli"
-    },
     "main": "./out/extension.js",
+    "browser": "./dist/web/extension.js",
     "scripts": {
         "langium:generate": "langium generate",
         "langium:watch": "langium generate --watch",
         "build": "langium generate && tsc -b tsconfig.json",
         "build:bundle:extension": "esbuild ./src/extension.ts src/language-server/main.ts --bundle --outdir=out --external:vscode --format=cjs --platform=node --minify",
         "build:bundle:webworker": "esbuild ./src/language-server/main.ts --bundle --outdir=out --format=iife --minify",
+        "build:bundle:web": "webpack --mode production --devtool hidden-source-map",
         "watch": "tsc -b tsconfig.json --watch",
         "watch2": "npm run watch & npm run langium:watch",
         "lint": "eslint src --ext ts",
         "test": "vitest",
         "test-ui": "vitest --ui",
-        "package": "npm run build:bundle:extension && vsce package"
+        "package": "npm run build:bundle:extension && npm run build:bundle:web && vsce package",
+
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "package-web": "webpack --mode production --devtool hidden-source-map"
     },
     "dependencies": {
         "chevrotain": "~10.4.2",
@@ -71,6 +86,7 @@
     "devDependencies": {
         "@types/node": "~16.18.11",
         "@types/vscode": "~1.67.0",
+        "@types/webpack-env": "^1.16.0",
         "@typescript-eslint/eslint-plugin": "~5.51.0",
         "@typescript-eslint/parser": "~5.51.0",
         "@vitest/ui": "~0.28.4",
@@ -78,7 +94,12 @@
         "eslint": "~8.33.0",
         "esbuild": "~0.17.11",
         "langium-cli": "~1.1.0",
+        "path-browserify": "^1.0.1",
+        "process": "^0.11.10",
+        "ts-loader": "^9.2.2",
         "typescript": "~4.9.5",
-        "vitest": "^0.29.2"
+        "vitest": "^0.29.2",
+        "webpack": "^5.38.1",
+        "webpack-cli": "^4.7.0"
     }
 }

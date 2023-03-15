@@ -22,10 +22,12 @@ generated
 
 # IDE - VSCode
 .vscode/*
+.vscode-test-web/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+*.vsix
 
 # misc
 /.sass-cache
