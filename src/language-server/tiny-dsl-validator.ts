@@ -1,4 +1,4 @@
-import { AstNode, ValidationAcceptor, ValidationChecks } from 'langium';
+import { ValidationAcceptor, ValidationChecks } from 'langium';
 
 import { satisfies } from '../utils/types';
 import { Document, Entity, NamedElement, TinyDslAstType } from './generated/ast';
@@ -64,12 +64,16 @@ export class TinyDslValidator {
 // Extension methods
 declare global {
     interface Array<T> {
+        first(): T | undefined;
         groupBy<KeyT>(this: T[], key: (element: T) => KeyT): Map<KeyT, T[]>;
     }
     interface Map<K, V> {
         valuesArray(): V[];
     }
 }
+Array.prototype.first = function () {
+    return this.length >= 1 ? this[0] : undefined;
+};
 Array.prototype.groupBy = function (keyFn) {
     return this.reduce(function (accumulator: Map<any, any[]>, currentVal) {
         let key = keyFn(currentVal);

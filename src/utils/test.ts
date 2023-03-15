@@ -33,7 +33,9 @@ import {
     TextDocumentIdentifier,
     TextDocumentPositionParams,
 } from 'vscode-languageserver';
+import { CodeActionParams } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import { CodeAction } from 'vscode-languageserver-types';
 import { URI } from 'vscode-uri';
 
 import { Document } from '../language-server/generated/ast';
@@ -71,6 +73,7 @@ export interface ExpectedSymbols extends ExpectedBase {
 
 export const services = createTinyDslServices(EmptyFileSystem);
 export const validate = validationHelper<Document>(services.TinyDsl);
+export const fix = quickFixHelper<Document>(services.TinyDsl);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Issues (Validation Errors, Warnings, etc.)
@@ -541,6 +544,31 @@ export function validationHelper<T extends AstNode = AstNode>(
     return async (input) => {
         const document = await parse(input);
         return { document, diagnostics: await services.validation.DocumentValidator.validateDocument(document) };
+    };
+}
+
+export function quickFixHelper<T extends AstNode = AstNode>(
+    services: LangiumServices,
+): (input: string) => Promise<string> {
+    const validate = validationHelper<T>(services);
+    return async (input) => {
+        const { document, diagnostics } = await validate(input);
+        const params: CodeActionParams = {
+            textDocument: document.textDocument,
+            range: { start: { line: 1, character: 1 }, end: { line: 1, character: 1 } },
+            context: { diagnostics },
+        };
+        const codeActions = await services.lsp.CodeActionProvider?.getCodeActions(document, params);
+        const codeAction = codeActions
+            ?.filter((ac) => CodeAction.is(ac) && ac.isPreferred)
+            .map((ac) => ac as CodeAction)
+            .first();
+        const changes = codeAction?.edit?.changes || {};
+        const edit = (changes[document.textDocument.uri] || [])[0];
+        if (edit) {
+            TextDocument.update(document.textDocument, [{ range: edit.range, text: edit.newText }], 1);
+        }
+        return document.textDocument.getText();
     };
 }
 
