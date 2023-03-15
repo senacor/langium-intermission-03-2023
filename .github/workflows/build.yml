@@ -35,7 +35,7 @@ jobs:
     - run: npm run lint
     - run: npm run test
       if: always()
-    - run: npm run package
+    - run: npm run package "${{github.ref_name}}"
       if: always()
     - name: Release
       if: github.event_name == 'release'
