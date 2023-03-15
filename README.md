@@ -75,3 +75,4 @@ Langium GitHub-Repository with lots of sample code: <https://github.com/langium/
 * <https://langium.org/tutorials/generation/>
 * <https://langium.org/tutorials/building_an_extension/>
 * <https://langium.org/tutorials/langium_and_monaco/>
+* <https://code.visualstudio.com/api/extension-guides/web-extensions>

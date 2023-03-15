@@ -1,27 +1,35 @@
 import {
-    createDefaultModule, createDefaultSharedModule, DefaultSharedModuleContext, inject,
-    LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
+    createDefaultModule,
+    createDefaultSharedModule,
+    DefaultSharedModuleContext,
+    inject,
+    LangiumServices,
+    LangiumSharedServices,
+    Module,
+    PartialLangiumServices,
 } from 'langium';
+
 import { TinyDslDocumentSymbolProvider } from '../outline/tiny-dsl-document-symbol-provicer';
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
 import { TinyDslScopeProvider } from '../scoping/scope-provider';
 import { TinyDslGeneratedModule, TinyDslGeneratedSharedModule } from './generated/module';
-import { TinyDslValidator, registerValidationChecks } from './tiny-dsl-validator';
+import { TinyDslActionProvider } from './tiny-dsl-actions';
+import { registerValidationChecks, TinyDslValidator } from './tiny-dsl-validator';
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type TinyDslAddedServices = {
     validation: {
-        TinyDslValidator: TinyDslValidator
-    }
-}
+        TinyDslValidator: TinyDslValidator;
+    };
+};
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type TinyDslServices = LangiumServices & TinyDslAddedServices
+export type TinyDslServices = LangiumServices & TinyDslAddedServices;
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
@@ -30,15 +38,16 @@ export type TinyDslServices = LangiumServices & TinyDslAddedServices
  */
 export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & TinyDslAddedServices> = {
     validation: {
-        TinyDslValidator: () => new TinyDslValidator()
+        TinyDslValidator: () => new TinyDslValidator(),
     },
     references: {
         ScopeComputation: (services) => new TinyDslScopeComputation(services),
-        ScopeProvider: (services) => new TinyDslScopeProvider(services)
+        ScopeProvider: (services) => new TinyDslScopeProvider(services),
     },
     lsp: {
-        DocumentSymbolProvider: (services) => new TinyDslDocumentSymbolProvider(services)
-    }
+        CodeActionProvider: (services) => new TinyDslActionProvider(services),
+        DocumentSymbolProvider: (services) => new TinyDslDocumentSymbolProvider(services),
+    },
 };
 
 /**
@@ -57,19 +66,12 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
  * @returns An object wrapping the shared services and the language-specific services
  */
 export function createTinyDslServices(context: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    TinyDsl: TinyDslServices
+    shared: LangiumSharedServices;
+    TinyDsl: TinyDslServices;
 } {
-    console.log("createServices")
-    const shared = inject(
-        createDefaultSharedModule(context),
-        TinyDslGeneratedSharedModule
-    );
-    const TinyDsl = inject(
-        createDefaultModule({ shared }),
-        TinyDslGeneratedModule,
-        TinyDslModule
-    );
+    console.log('createServices');
+    const shared = inject(createDefaultSharedModule(context), TinyDslGeneratedSharedModule);
+    const TinyDsl = inject(createDefaultModule({ shared }), TinyDslGeneratedModule, TinyDslModule);
     shared.ServiceRegistry.register(TinyDsl);
     registerValidationChecks(TinyDsl);
     return { shared, TinyDsl };
