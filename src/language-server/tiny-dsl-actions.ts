@@ -12,6 +12,17 @@ import { CodeAction, Command } from 'vscode-languageserver-types';
 
 import { Issues } from './tiny-dsl-validator';
 
+type ActionProviderFunction = (diagnostic: Diagnostic, document: LangiumDocument) => CodeAction;
+const actionProviders: { [key: string]: ActionProviderFunction[] } = {};
+/**
+ * Quick Fix Decorator
+ */
+function Fix(issueCode: string): any {
+    return function (target: object, propertyKey: string, propertyDescriptor: PropertyDescriptor) {
+        (actionProviders[issueCode] = actionProviders[issueCode] || []).push(propertyDescriptor.value);
+    };
+}
+
 export class TinyDslActionProvider implements CodeActionProvider {
     protected readonly reflection: AstReflection;
     protected readonly indexManager: IndexManager;
@@ -23,26 +34,17 @@ export class TinyDslActionProvider implements CodeActionProvider {
 
     getCodeActions(document: LangiumDocument, params: CodeActionParams): MaybePromise<Array<Command | CodeAction>> {
         const result: CodeAction[] = [];
-        const acceptor = (ca: CodeAction | undefined) => ca && result.push(ca);
         for (const diagnostic of params.context.diagnostics) {
-            this.createCodeActions(diagnostic, document, acceptor);
+            const issueCode = diagnostic.code || '';
+            const providers = actionProviders[issueCode] || [];
+            for (const provider of providers) {
+                result.push(provider(diagnostic, document));
+            }
         }
         return result;
     }
 
-    private createCodeActions(
-        diagnostic: Diagnostic,
-        document: LangiumDocument,
-        accept: (ca: CodeAction | undefined) => void,
-    ): void {
-        switch (diagnostic.code) {
-            case Issues.Entity_NameNotCapitalized.code:
-                accept(this.makeUpperCase(diagnostic, document));
-                break;
-        }
-        return undefined;
-    }
-
+    @Fix(Issues.Entity_NameNotCapitalized.code)
     private makeUpperCase(diagnostic: Diagnostic, document: LangiumDocument): CodeAction {
         const range = {
             start: diagnostic.range.start,
