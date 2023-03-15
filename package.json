@@ -2,16 +2,18 @@
     "name": "tiny-dsl",
     "displayName": "TinyDSL",
     "description": "An example language to define basic Entities and Relations.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "Senacor Technologies AG",
     "icon": "./resources/senacor.png",
-    "categories": ["Programming Languages"],
+    "categories": [
+        "Programming Languages"
+    ],
     "engines": {
         "vscode": "^1.67.0"
     },
     "repository": {
-          "type": "git",
-          "url": "https://github.com/senacor/langium-intermission-03-2023"
+        "type": "git",
+        "url": "https://github.com/senacor/langium-intermission-03-2023"
     },
     "contributes": {
         "languages": [
@@ -70,7 +72,6 @@
         "test": "vitest",
         "test-ui": "vitest --ui",
         "package": "npm run build:bundle:extension && npm run build:bundle:web && vsce package",
-
         "compile-web": "webpack",
         "watch-web": "webpack --watch",
         "package-web": "webpack --mode production --devtool hidden-source-map"
