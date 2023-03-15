@@ -54,6 +54,14 @@ This folder contains all necessary files for your language extension.
 * To start using your extension with VS Code, copy it into the `<user home>/.vscode/extensions` folder and restart Code.
 * To share your extension with the world, read the [VS Code documentation](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) about publishing an extension.
 
+## Web-based Development
+
+* VS Code extensions can be deployed as web extensions as well
+* Run `npm run compile-web` to compile the TinyDSL as a web-based extension.
+* Set the $extensionFolderPath variable to your workspace location (e.g., `$extensionFolderPath='C:\Dev\Langium\langium-intermission-02-2023'`).
+* Run `npx @vscode/test-web --extensionDevelopmentPath=$extensionFolderPath` to run VS Code as a local server at port 3000
+* Go to your browser and open <http://localhost:3000/>
+
 ## To Go Further
 
 Documentation about the Langium framework is available at <https://langium.org>.

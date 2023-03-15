@@ -21,6 +21,7 @@ generated
 
 # IDE - VSCode
 .vscode/*
+.vscode-test-web/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json

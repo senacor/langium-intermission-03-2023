@@ -10,38 +10,48 @@
         "Programming Languages"
     ],
     "contributes": {
-        "languages": [{
-            "id": "tiny-dsl",
-            "aliases": ["Tiny DSL", "tiny-dsl"],
-            "extensions": [".tinydsl"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "tiny-dsl",
-            "scopeName": "source.tiny-dsl",
-            "path": "./syntaxes/tiny-dsl.tmLanguage.json"
-        }],
-        "commands": [{
-            "command": "tinydsl.generateSql",
-            "title": "Generate TinyDSL SQL DDL"
-        }],
+        "languages": [
+            {
+                "id": "tiny-dsl",
+                "aliases": [
+                    "Tiny DSL",
+                    "tiny-dsl"
+                ],
+                "extensions": [
+                    ".tinydsl"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "tiny-dsl",
+                "scopeName": "source.tiny-dsl",
+                "path": "./syntaxes/tiny-dsl.tmLanguage.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "tinydsl.generateSql",
+                "title": "Generate TinyDSL SQL DDL"
+            }
+        ],
         "menus": {
-            "editor/title": [{
-                "command": "tinydsl.generateSql"
-            }]
+            "editor/title": [
+                {
+                    "command": "tinydsl.generateSql"
+                }
+            ]
         }
     },
     "activationEvents": [
         "onLanguage:tiny-dsl"
     ],
     "files": [
-        "bin",
         "out",
         "src"
     ],
-    "bin": {
-        "tiny-dsl-cli": "./bin/cli"
-    },
+    "browser": "./dist/web/extension.js",
     "main": "./out/extension.js",
     "scripts": {
         "build": "langium generate && tsc -b tsconfig.json",
@@ -52,7 +62,10 @@
         "lint": "eslint src --ext ts",
         "test": "vitest",
         "test-ui": "vitest --ui",
-        "vscode:prepublish": "npm run build && npm run lint"
+        "vscode:prepublish": "npm run package-web",
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "package-web": "webpack --mode production --devtool hidden-source-map"
     },
     "dependencies": {
         "chevrotain": "~10.4.2",
@@ -65,12 +78,18 @@
     "devDependencies": {
         "@types/node": "~16.18.11",
         "@types/vscode": "~1.67.0",
+        "@types/webpack-env": "^1.16.0",
         "@typescript-eslint/eslint-plugin": "~5.51.0",
         "@typescript-eslint/parser": "~5.51.0",
         "@vitest/ui": "~0.28.4",
         "eslint": "~8.33.0",
         "langium-cli": "~1.1.0",
+        "path-browserify": "^1.0.1",
+        "process": "^0.11.10",
+        "ts-loader": "^9.2.2",
         "typescript": "~4.9.5",
-        "vitest": "^0.29.2"
+        "vitest": "^0.29.2",
+        "webpack": "^5.38.1",
+        "webpack-cli": "^4.7.0"
     }
 }
