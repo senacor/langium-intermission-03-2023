@@ -6,6 +6,7 @@
 /out-tsc
 /out
 generated
+*.vsix
 
 # dependencies
 /node_modules
