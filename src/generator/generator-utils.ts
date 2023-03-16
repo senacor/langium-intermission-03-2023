@@ -1,10 +1,10 @@
-import path from 'path';
 import { AstNode, LangiumDocument, LangiumServices } from 'langium';
+import path from 'path';
 import { URI } from 'vscode-uri';
 
 interface FilePathData {
-    destination: string,
-    name: string
+    destination: string;
+    name: string;
 }
 
 /**
@@ -14,20 +14,23 @@ interface FilePathData {
  * @returns The array of LangiumDocuments (as Promise).
  */
 export function extractDocuments(fileNames: string[], services: LangiumServices): Promise<LangiumDocument>[] {
-    return fileNames.map(fileName => {
-        const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(URI.file(path.resolve(fileName)));
-        return services.shared.workspace.DocumentBuilder.build([document], { validationChecks: 'all' })
-            .then(() => {
-                const validationErrors = (document.diagnostics ?? []).filter(e => e.severity === 1);
-                if (validationErrors.length > 0) {
-                    let errorMsg = 'There are validation errors:\n';
-                    for (const validationError of validationErrors) {
-                        errorMsg += `line ${validationError.range.start.line + 1}: ${validationError.message} [${document.textDocument.getText(validationError.range)}]`;
-                    }
-                    return Promise.reject(errorMsg);
+    return fileNames.map((fileName) => {
+        const document = services.shared.workspace.LangiumDocuments.getOrCreateDocument(
+            URI.file(path.resolve(fileName)),
+        );
+        return services.shared.workspace.DocumentBuilder.build([document], { validationChecks: 'all' }).then(() => {
+            const validationErrors = (document.diagnostics ?? []).filter((e) => e.severity === 1);
+            if (validationErrors.length > 0) {
+                let errorMsg = 'There are validation errors:\n';
+                for (const validationError of validationErrors) {
+                    errorMsg += `line ${validationError.range.start.line + 1}: ${
+                        validationError.message
+                    } [${document.textDocument.getText(validationError.range)}]`;
                 }
-                return document;
-            })
+                return Promise.reject(errorMsg);
+            }
+            return document;
+        });
     });
 }
 
@@ -38,7 +41,9 @@ export function extractDocuments(fileNames: string[], services: LangiumServices)
  * @returns An array of AstNodes as a Promise.
  */
 export function extractAstNodes<T extends AstNode>(fileNames: string[], services: LangiumServices): Promise<T>[] {
-    return extractDocuments(fileNames, services).map(document => document.then(document => document.parseResult?.value as T));
+    return extractDocuments(fileNames, services).map((document) =>
+        document.then((document) => document.parseResult?.value as T),
+    );
 }
 
 /**
@@ -51,9 +56,9 @@ export function extractDestinationAndName(filePath: string, workspaceDir: string
     /* Not the niciest soluition, but works (at least on Windows ...)
      * Assumes that the workspace path is a prefix of the file path and that each file ends with '.tinydsl' */
     filePath = filePath.substring(workspaceDir.length, filePath.length - '.tinydsl'.length);
-    const destination = workspaceDir + '\\' + outputDir + path.dirname(filePath);
+    const destination = path.join(workspaceDir, outputDir, path.dirname(filePath));
     return {
         destination: destination,
-        name: path.basename(filePath)
+        name: path.basename(filePath),
     };
 }
