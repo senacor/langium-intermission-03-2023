@@ -1,10 +1,12 @@
 package mein.test.namespace
 
-import mein.test.namespace.otherFolder.Kredit
-import mein.test.namespace.otherFolder.Aval
+//import mein.test.namespace.otherFolder.Kredit
+//import mein.test.namespace.otherFolder.Aval
 
 
-
+/**
+Ein ganz normaler Kunde
+*/
 Entity Kunde {
     String Name
     Int Alter

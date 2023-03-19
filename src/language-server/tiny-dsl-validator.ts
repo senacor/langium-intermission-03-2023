@@ -1,7 +1,21 @@
-import { ValidationAcceptor, ValidationChecks } from 'langium';
+import {
+	AstNodeLocator,
+	IndexManager,
+	LangiumDocuments,
+	References,
+	ScopeProvider,
+	ValidationAcceptor,
+	ValidationChecks,
+} from 'langium';
+import { s } from 'vitest/dist/env-afee91f0';
 
 import { satisfies } from '../utils/types';
-import { Document, Entity, NamedElement, TinyDslAstType } from './generated/ast';
+import {
+	Document,
+	Entity,
+	NamedElement,
+	TinyDslAstType,
+} from './generated/ast';
 
 import type { TinyDslServices } from './tiny-dsl-module';
 
@@ -28,7 +42,19 @@ export const Issues = satisfies<Record<string, Issue>>()({
  * Implementation of custom validations.
  */
 export class TinyDslValidator {
+    protected readonly indexManager: IndexManager;
+    protected readonly references: References;
+    protected readonly documents: LangiumDocuments;
+
+    constructor(protected services: TinyDslServices) {
+        this.indexManager = services.shared.workspace.IndexManager;
+        this.references = services.references.References;
+        this.documents = services.shared.workspace.LangiumDocuments;
+    }
+
     checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
+        const entities = this.indexManager.allElements(Entity).toArray();
+        const resolved = entities.map((desc) => this.documents.getOrCreateDocument(desc.documentUri).parseResult.value);
         this.checkNoDuplicateElements(document.entities, Issues.Document_DuplicateEntities, accept);
     }
 

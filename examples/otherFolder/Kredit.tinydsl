@@ -1,10 +1,11 @@
 package mein.test.namespace.otherFolder
 
+/**
+Ein ganz normaler Kredit
+*/
 Entity Kredit {
     Int Saldo
 }
 Entity Aval {
     Int Saldo
 }
-
-
