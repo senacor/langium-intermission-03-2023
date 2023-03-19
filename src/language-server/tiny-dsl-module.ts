@@ -17,6 +17,7 @@ import {
 	TinyDslGeneratedSharedModule,
 } from './generated/module';
 import { TinyDslActionProvider } from './tiny-dsl-actions';
+import { IndexAccess } from './tiny-dsl-services';
 import {
 	registerValidationChecks,
 	TinyDslValidator,
@@ -28,6 +29,9 @@ import {
 export type TinyDslAddedServices = {
     validation: {
         TinyDslValidator: TinyDslValidator;
+    };
+    workspace: {
+        IndexAccess: IndexAccess;
     };
 };
 
@@ -53,6 +57,9 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     lsp: {
         CodeActionProvider: (services) => new TinyDslActionProvider(services),
         DocumentSymbolProvider: (services) => new TinyDslDocumentSymbolProvider(services),
+    },
+    workspace: {
+        IndexAccess: (services) => new IndexAccess(services),
     },
 };
 

@@ -1,14 +1,22 @@
-import { AstNode, AstNodeDescription, DefaultScopeComputation, findRootNode, LangiumDocument, LangiumServices, PrecomputedScopes, streamAllContents} from "langium";
-import { isDocument, isEntity } from "../language-server/generated/ast";
+import {
+	AstNode,
+	AstNodeDescription,
+	DefaultScopeComputation,
+	findRootNode,
+	LangiumDocument,
+	LangiumServices,
+	PrecomputedScopes,
+	streamAllContents,
+} from 'langium';
 
+import { isDocument, isEntity } from '../language-server/generated/ast';
 
 export class TinyDslScopeComputation extends DefaultScopeComputation {
-
     constructor(services: LangiumServices) {
         super(services);
     }
-    
-     // Emitting previous implementation for brevity
+
+    // Emitting previous implementation for brevity
 
     /**
      * Export all entities using their FQN
@@ -29,20 +37,19 @@ export class TinyDslScopeComputation extends DefaultScopeComputation {
      */
     override processNode(node: AstNode, document: LangiumDocument, scopes: PrecomputedScopes): void {
         if (isEntity(node)) {
-            let doc = findRootNode(node)
-    
+            let doc = findRootNode(node);
+
             if (isDocument(doc)) {
                 scopes.add(doc, this.descriptions.createDescription(node, node.name, document));
             }
         }
     }
-    
 
     /**
      * Build a qualified name for a model node
      */
-    private getQualifiedName(node: AstNode): string | undefined {
-        let doc = findRootNode(node)
+    getQualifiedName(node: AstNode): string | undefined {
+        let doc = findRootNode(node);
 
         if (isDocument(doc)) {
             if (isEntity(node)) {
@@ -52,6 +59,4 @@ export class TinyDslScopeComputation extends DefaultScopeComputation {
 
         return undefined;
     }
-
-    
 }
