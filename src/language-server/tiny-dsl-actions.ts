@@ -1,10 +1,10 @@
 import {
-    AstReflection,
-    CodeActionProvider,
-    IndexManager,
-    LangiumDocument,
-    LangiumServices,
-    MaybePromise,
+	AstReflection,
+	CodeActionProvider,
+	IndexManager,
+	LangiumDocument,
+	LangiumServices,
+	MaybePromise,
 } from 'langium';
 import { CodeActionKind, Diagnostic } from 'vscode-languageserver';
 import { CodeActionParams } from 'vscode-languageserver-protocol';
@@ -46,7 +46,7 @@ export class TinyDslActionProvider implements CodeActionProvider {
             },
         };
         return {
-            title: 'Change first letter to upper case',
+            title: 'Ersten Buchstaben in Großbuchstaben ändern',
             kind: CodeActionKind.QuickFix,
             diagnostics: [diagnostic],
             isPreferred: true,

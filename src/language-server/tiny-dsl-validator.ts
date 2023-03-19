@@ -19,9 +19,12 @@ export function registerValidationChecks(services: TinyDslServices) {
 }
 
 export const Issues = satisfies<Record<string, Issue>>()({
-    Document_DuplicateEntities: { code: 'Document.DuplicateEntities', msg: 'Duplicate entity' },
-    Entity_DuplicateMembers: { code: 'Entity.DuplicateMembers', msg: 'Duplicate member' },
-    Entity_NameNotCapitalized: { code: 'Entity.NameNotCapitalized', msg: 'Entity name should start with a capital.' },
+    Document_DuplicateEntity: { code: 'Document.DuplicateEntity', msg: 'Entität nicht eindeutig: ' },
+    Entity_DuplicateMember: { code: 'Entity.DuplicateMember', msg: 'Member nicht eindeutig:' },
+    Entity_NameNotCapitalized: {
+        code: 'Entity.NameNotCapitalized',
+        msg: 'Der Name einer Entität sollte mit einem Großbuchstaben beginnen.',
+    },
 });
 
 /**
@@ -48,7 +51,7 @@ export class TinyDslValidator {
     }
 
     checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
-        const issue = Issues.Entity_DuplicateMembers;
+        const issue = Issues.Entity_DuplicateMember;
         const duplicates = this.findDuplicates(entity.members);
         for (let dup of duplicates) {
             accept('error', `${issue.msg} [${dup.name}]`, { node: dup, property: 'name', code: issue.code });
@@ -56,7 +59,7 @@ export class TinyDslValidator {
     }
 
     checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
-        const issue = Issues.Document_DuplicateEntities;
+        const issue = Issues.Document_DuplicateEntity;
         const entities = this.indexAccess.searchIndex(Entity);
         const duplicates = this.findDuplicates(entities).filter((desc) => desc.documentUri === document.$document?.uri);
         for (let dup of duplicates) {
