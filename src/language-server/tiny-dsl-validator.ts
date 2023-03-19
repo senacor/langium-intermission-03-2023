@@ -1,24 +1,10 @@
-import {
-	AstNodeLocator,
-	IndexManager,
-	LangiumDocuments,
-	References,
-	ScopeProvider,
-	ValidationAcceptor,
-	ValidationChecks,
-} from 'langium';
-import { s } from 'vitest/dist/env-afee91f0';
+import { ValidationAcceptor, ValidationChecks } from 'langium';
 
 import { satisfies } from '../utils/types';
-import {
-	Document,
-	Entity,
-	NamedElement,
-	TinyDslAstType,
-} from './generated/ast';
+import { Document, Entity, TinyDslAstType } from './generated/ast';
+import { IndexAccess } from './tiny-dsl-services';
 
 import type { TinyDslServices } from './tiny-dsl-module';
-
 /**
  * Register custom validation checks.
  */
@@ -42,24 +28,10 @@ export const Issues = satisfies<Record<string, Issue>>()({
  * Implementation of custom validations.
  */
 export class TinyDslValidator {
-    protected readonly indexManager: IndexManager;
-    protected readonly references: References;
-    protected readonly documents: LangiumDocuments;
+    protected readonly indexAccess: IndexAccess;
 
     constructor(protected services: TinyDslServices) {
-        this.indexManager = services.shared.workspace.IndexManager;
-        this.references = services.references.References;
-        this.documents = services.shared.workspace.LangiumDocuments;
-    }
-
-    checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
-        const entities = this.indexManager.allElements(Entity).toArray();
-        const resolved = entities.map((desc) => this.documents.getOrCreateDocument(desc.documentUri).parseResult.value);
-        this.checkNoDuplicateElements(document.entities, Issues.Document_DuplicateEntities, accept);
-    }
-
-    checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
-        this.checkNoDuplicateElements(entity.members, Issues.Entity_DuplicateMembers, accept);
+        this.indexAccess = services.workspace.IndexAccess;
     }
 
     checkEntity_NameStartsWithCapital(entity: Entity, accept: ValidationAcceptor): void {
@@ -75,15 +47,29 @@ export class TinyDslValidator {
         }
     }
 
-    checkNoDuplicateElements(elements: NamedElement[], issue: Issue, accept: ValidationAcceptor) {
-        let duplicates = elements
+    checkEntity_NoDuplicateMembers(entity: Entity, accept: ValidationAcceptor): void {
+        const issue = Issues.Entity_DuplicateMembers;
+        const duplicates = this.findDuplicates(entity.members);
+        for (let dup of duplicates) {
+            accept('error', `${issue.msg} [${dup.name}]`, { node: dup, property: 'name', code: issue.code });
+        }
+    }
+
+    checkDocument_NoDuplicateEntities(document: Document, accept: ValidationAcceptor) {
+        const issue = Issues.Document_DuplicateEntities;
+        const entities = this.indexAccess.searchIndex(Entity);
+        const duplicates = this.findDuplicates(entities).filter((desc) => desc.documentUri === document.$document?.uri);
+        for (let dup of duplicates) {
+            accept('error', `${issue.msg} [${dup.name}]`, { node: dup.node!, property: 'name', code: issue.code });
+        }
+    }
+
+    findDuplicates<T extends { name: string }>(elements: T[]): T[] {
+        return elements
             .groupBy((el) => el.name)
             .valuesArray()
             .filter((arr) => arr.length >= 2)
             .flat();
-        for (let dup of duplicates) {
-            accept('error', `${issue.msg} [${dup.name}]`, { node: dup, property: 'name', code: issue.code });
-        }
     }
 }
 
