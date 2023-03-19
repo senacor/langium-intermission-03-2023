@@ -1,12 +1,14 @@
 import {
 	createDefaultModule,
 	createDefaultSharedModule,
+	DefaultIndexManager,
 	DefaultSharedModuleContext,
 	inject,
 	LangiumServices,
 	LangiumSharedServices,
 	Module,
 	PartialLangiumServices,
+	PartialLangiumSharedServices,
 } from 'langium';
 
 import { TinyDslDocumentSymbolProvider } from '../outline/tiny-dsl-document-symbol-provicer';
@@ -17,7 +19,7 @@ import {
 	TinyDslGeneratedSharedModule,
 } from './generated/module';
 import { TinyDslActionProvider } from './tiny-dsl-actions';
-import { IndexAccess } from './tiny-dsl-services';
+import { IndexAccess, TinyDslIndexManager } from './tiny-dsl-services';
 import {
 	registerValidationChecks,
 	TinyDslValidator,
@@ -63,6 +65,12 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     },
 };
 
+export const TinyDslSharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
+    workspace: {
+        IndexManager: (services) => new TinyDslIndexManager(services),
+    },
+};
+
 /**
  * Create the full set of services required by Langium.
  *
@@ -83,7 +91,7 @@ export function createTinyDslServices(context: DefaultSharedModuleContext): {
     TinyDsl: TinyDslServices;
 } {
     console.log('createServices');
-    const shared = inject(createDefaultSharedModule(context), TinyDslGeneratedSharedModule);
+    const shared = inject(createDefaultSharedModule(context), TinyDslGeneratedSharedModule, TinyDslSharedModule);
     const TinyDsl = inject(createDefaultModule({ shared }), TinyDslGeneratedModule, TinyDslModule);
     shared.ServiceRegistry.register(TinyDsl);
     registerValidationChecks(TinyDsl);

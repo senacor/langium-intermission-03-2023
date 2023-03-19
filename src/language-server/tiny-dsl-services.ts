@@ -2,15 +2,19 @@ import {
 	AstNode,
 	AstNodeDescription,
 	AstNodeLocator,
+	DefaultIndexManager,
 	IndexManager,
+	LangiumDocument,
 	LangiumDocuments,
+	LangiumSharedServices,
+	toString,
 } from 'langium';
+import { URI } from 'vscode-uri';
 
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
-import { QualifiedName, TinyDslAstType } from './generated/ast';
+import { Document, QualifiedName, TinyDslAstType } from './generated/ast';
 
 import type { TinyDslServices } from './tiny-dsl-module';
-
 /**
  * Service that allows to retrieve AstNodes from the IndexManager.
  */
@@ -54,5 +58,17 @@ export class IndexAccess {
         }
         const doc = this.documents.getOrCreateDocument(nodeDescription.documentUri);
         return this.astNodeLocator.getAstNode(doc.parseResult.value, nodeDescription.path);
+    }
+}
+
+export class TinyDslIndexManager extends DefaultIndexManager {
+    override isAffected(document: LangiumDocument, changed: URI): boolean {
+        if (super.isAffected(document, changed)) {
+            return true;
+        }
+        // The document is also affected if it lies inside the same package
+        const thisDocument = document.parseResult.value as Document;
+        const otherDocument = this.langiumDocuments().getOrCreateDocument(changed).parseResult.value as Document;
+        return thisDocument.package === otherDocument.package;
     }
 }
