@@ -4,7 +4,6 @@ import mein.test.namespace.otherFolder.Kredit
 import mein.test.namespace.otherFolder.Aval
 import mein.test.namespace.otherFolder.Zins
 
-
 /**
 Ein Kunde hat einen Namen und ein Alter
 und kann einen Kredit mit einem gewissen Zins aufnehmen.
@@ -21,10 +20,12 @@ Entity Kunde {
 }
 
 // Entity Kunde {
-//     String Name
+// 	String Name
 // }
 
 // Entity account {
-//    String ID
-//    Int ID
+//     String ID
+//     Int ID
+
+//     has Kunde as Inhaber
 // }
