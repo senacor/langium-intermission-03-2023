@@ -1,7 +1,6 @@
 import {
 	createDefaultModule,
 	createDefaultSharedModule,
-	DefaultIndexManager,
 	DefaultSharedModuleContext,
 	inject,
 	LangiumServices,
@@ -14,12 +13,12 @@ import {
 import { TinyDslDocumentSymbolProvider } from '../outline/tiny-dsl-document-symbol-provicer';
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
 import { TinyDslScopeProvider } from '../scoping/scope-provider';
-import { services } from '../utils/test';
 import {
 	TinyDslGeneratedModule,
 	TinyDslGeneratedSharedModule,
 } from './generated/module';
 import { TinyDslActionProvider } from './tiny-dsl-actions';
+import { TinyDslCompletionProvider } from './tiny-dsl-completions';
 import { TinyDslFormatter } from './tiny-dsl-formatter';
 import { IndexAccess, TinyDslIndexManager } from './tiny-dsl-services';
 import {
@@ -60,6 +59,7 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     },
     lsp: {
         CodeActionProvider: (services) => new TinyDslActionProvider(services),
+        CompletionProvider: (services) => new TinyDslCompletionProvider(services),
         DocumentSymbolProvider: (services) => new TinyDslDocumentSymbolProvider(services),
         Formatter: () => new TinyDslFormatter(),
     },
