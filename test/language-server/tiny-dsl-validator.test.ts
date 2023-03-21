@@ -1,7 +1,17 @@
-import { describe, test } from 'vitest';
+import { beforeEach, describe, test } from 'vitest';
 
 import { Issues } from '../../src/language-server/tiny-dsl-validator';
-import { expectError, expectNoIssues, expectWarning, validate } from '../../src/utils/test';
+import {
+	clearIndex,
+	expectError,
+	expectNoIssues,
+	expectWarning,
+	validate,
+} from '../../src/utils/test';
+
+beforeEach(() => {
+    clearIndex();
+});
 
 describe('TinyDslValidator', () => {
     describe('checkDocument', () => {
@@ -15,7 +25,7 @@ describe('TinyDslValidator', () => {
             package test
             Entity Customer {}
             Entity Customer {}`);
-            expectError(validation, Issues.Document_DuplicateEntities.code, {
+            expectError(validation, Issues.Document_DuplicateEntity.code, {
                 node: validation.document.parseResult.value.entities[0],
             });
         });
@@ -36,7 +46,7 @@ describe('TinyDslValidator', () => {
                 String Name
                 Int Name
             }`);
-            expectError(validation, Issues.Entity_DuplicateMembers.code, {
+            expectError(validation, Issues.Entity_DuplicateMember.code, {
                 node: validation.document.parseResult.value.entities[0],
             });
         });

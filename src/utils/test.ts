@@ -7,31 +7,31 @@
  ******************************************************************************/
 
 import {
-    AstNode,
-    CstNode,
-    EmptyFileSystem,
-    escapeRegExp,
-    findNodeForProperty,
-    LangiumDocument,
-    LangiumServices,
-    Properties,
-    SemanticTokensDecoder,
+	AstNode,
+	CstNode,
+	EmptyFileSystem,
+	escapeRegExp,
+	findNodeForProperty,
+	LangiumDocument,
+	LangiumServices,
+	Properties,
+	SemanticTokensDecoder,
 } from 'langium';
 import { expect as expectFunction } from 'vitest';
 import {
-    CancellationTokenSource,
-    CompletionItem,
-    Diagnostic,
-    DiagnosticSeverity,
-    DocumentSymbol,
-    FormattingOptions,
-    MarkupContent,
-    Range,
-    ReferenceParams,
-    SemanticTokensParams,
-    SemanticTokenTypes,
-    TextDocumentIdentifier,
-    TextDocumentPositionParams,
+	CancellationTokenSource,
+	CompletionItem,
+	Diagnostic,
+	DiagnosticSeverity,
+	DocumentSymbol,
+	FormattingOptions,
+	MarkupContent,
+	Range,
+	ReferenceParams,
+	SemanticTokensParams,
+	SemanticTokenTypes,
+	TextDocumentIdentifier,
+	TextDocumentPositionParams,
 } from 'vscode-languageserver';
 import { CodeActionParams } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -41,6 +41,7 @@ import { URI } from 'vscode-uri';
 import { Document } from '../language-server/generated/ast';
 import { createTinyDslServices } from '../language-server/tiny-dsl-module';
 
+const testURIs: URI[] = [];
 export function parseHelper<T extends AstNode = AstNode>(
     services: LangiumServices,
 ): (input: string) => Promise<LangiumDocument<T>> {
@@ -52,6 +53,7 @@ export function parseHelper<T extends AstNode = AstNode>(
         const document = services.shared.workspace.LangiumDocumentFactory.fromString<T>(input, uri);
         services.shared.workspace.LangiumDocuments.addDocument(document);
         await documentBuilder.build([document]);
+        testURIs.push(uri);
         return document;
     };
 }
@@ -74,6 +76,10 @@ export interface ExpectedSymbols extends ExpectedBase {
 export const services = createTinyDslServices(EmptyFileSystem);
 export const validate = validationHelper<Document>(services.TinyDsl);
 export const fix = quickFixHelper<Document>(services.TinyDsl);
+export const clearIndex = () => {
+    services.shared.workspace.IndexManager.remove(testURIs);
+    testURIs.length = 0;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Issues (Validation Errors, Warnings, etc.)
