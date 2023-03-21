@@ -6,8 +6,6 @@ import {
 	IndexManager,
 	LangiumDocument,
 	LangiumDocuments,
-	LangiumSharedServices,
-	toString,
 } from 'langium';
 import { URI } from 'vscode-uri';
 

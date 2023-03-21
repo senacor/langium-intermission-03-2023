@@ -1,20 +1,17 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-import {
-    LanguageClientOptions, ServerOptions, TransportKind
-} from 'vscode-languageclient/node';
 import { LanguageClient } from 'vscode-languageclient/browser';
+import { LanguageClientOptions } from 'vscode-languageclient/node';
+
 // import { deleteSqlForDslFile, generateSqlForAllTinyDslFiles, generateSqlForDslFile } from './../generator/sql-generator';
 
 let client: LanguageClient;
 
 export type GenerateOptions = {
     destination?: string;
-}
+};
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
-
     const disposable = vscode.commands.registerCommand('tinydsl.generateSql', () => {
         vscode.window.showInformationMessage('Hello World from helloworld-web-sample in a web extension host!');
     });
@@ -28,7 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     /* Register SymbolProvider for code outline. */
     // context.subscriptions.push(
     //     vscode.languages.registerDocumentSymbolProvider(
-    //         {scheme: "file", language: "tiny-dsl"}, 
+    //         {scheme: "file", language: "tiny-dsl"},
     //         new DeprecatedTinyDslDocumentSymbolProvider()
     //     )
     // );
@@ -59,11 +56,11 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function startLanguageClientForWeb(context: vscode.ExtensionContext) {
-    /* 
+    /*
      * all except the code to create the language client in not browser specific
      * and could be shared with a regular (Node) extension
      */
-    const documentSelector = [{ language: 'plaintext' }];
+    // const documentSelector = [{ language: 'plaintext' }];
 
     const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.tinydsl');
     context.subscriptions.push(fileSystemWatcher);
@@ -73,8 +70,8 @@ function startLanguageClientForWeb(context: vscode.ExtensionContext) {
         documentSelector: [{ scheme: 'file', language: 'tiny-dsl' }],
         synchronize: {
             // Notify the server about file changes to files contained in the workspace
-            fileEvents: fileSystemWatcher
-        }
+            fileEvents: fileSystemWatcher,
+        },
     };
 
     client = createWorkerLanguageClient(context, clientOptions);
@@ -87,10 +84,5 @@ function createWorkerLanguageClient(context: vscode.ExtensionContext, clientOpti
     const worker = new Worker(serverMain.toString(true));
 
     // create the language server client to communicate with the server running in the worker
-    return new LanguageClient(
-        'tiny-dsl',
-        'Tiny DSL',
-        clientOptions,
-        worker
-    );
+    return new LanguageClient('tiny-dsl', 'Tiny DSL', clientOptions, worker);
 }

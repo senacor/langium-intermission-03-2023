@@ -1,16 +1,23 @@
-import * as vscode from 'vscode';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import {
-    LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
+	LanguageClient,
+	LanguageClientOptions,
+	ServerOptions,
+	TransportKind,
 } from 'vscode-languageclient/node';
-import { deleteSqlForDslFile, generateSqlForAllTinyDslFiles, generateSqlForDslFile } from './generator/sql-generator';
-import { DeprecatedTinyDslDocumentSymbolProvider } from './outline/deprecated-tiny-dsl-document-symbol-provider';
+
+import {
+	deleteSqlForDslFile,
+	generateSqlForAllTinyDslFiles,
+	generateSqlForDslFile,
+} from './generator/sql-generator';
 
 let client: LanguageClient;
 
 export type GenerateOptions = {
     destination?: string;
-}
+};
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
@@ -22,7 +29,7 @@ export function activate(context: vscode.ExtensionContext): void {
     /* Register SymbolProvider for code outline. */
     // context.subscriptions.push(
     //     vscode.languages.registerDocumentSymbolProvider(
-    //         {scheme: "file", language: "tiny-dsl"}, 
+    //         {scheme: "file", language: "tiny-dsl"},
     //         new DeprecatedTinyDslDocumentSymbolProvider()
     //     )
     // );
@@ -57,13 +64,18 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
     // By setting `process.env.DEBUG_BREAK` to a truthy value, the language server will wait until a debugger is attached.
-    const debugOptions = { execArgv: ['--nolazy', `--inspect${process.env.DEBUG_BREAK ? '-brk' : ''}=${process.env.DEBUG_SOCKET || '6009'}`] };
+    const debugOptions = {
+        execArgv: [
+            '--nolazy',
+            `--inspect${process.env.DEBUG_BREAK ? '-brk' : ''}=${process.env.DEBUG_SOCKET || '6009'}`,
+        ],
+    };
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: ServerOptions = {
         run: { module: serverModule, transport: TransportKind.ipc },
-        debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
+        debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions },
     };
 
     const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.tinydsl');
@@ -74,17 +86,12 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
         documentSelector: [{ scheme: 'file', language: 'tiny-dsl' }],
         synchronize: {
             // Notify the server about file changes to files contained in the workspace
-            fileEvents: fileSystemWatcher
-        }
+            fileEvents: fileSystemWatcher,
+        },
     };
 
     // Create the language client and start the client.
-    const client = new LanguageClient(
-        'tiny-dsl',
-        'Tiny DSL',
-        serverOptions,
-        clientOptions
-    );
+    const client = new LanguageClient('tiny-dsl', 'Tiny DSL', serverOptions, clientOptions);
 
     // Start the client. This will also launch the server
     client.start();
