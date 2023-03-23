@@ -7,6 +7,8 @@ import { createTinyDslServices } from '../language-server/tiny-dsl-module';
 import { extractAstNodes, extractDestinationAndName } from './generator-utils';
 import * as vscode from 'vscode';
 
+const consoleOut = vscode.window.createOutputChannel('TinyDSLGenerator');
+
 /**
  * Generates SQL files for all TinyDSL files within the current workspace.
  */
@@ -15,7 +17,7 @@ export function generateSqlForAllTinyDslFiles() {
         generateSqlFiles(files.map(file => file.fsPath), vscode.workspace.rootPath || '.', '/generated')
             .map(result => result
                 .then(filename => vscode.window.showInformationMessage(`File ${filename} generated`))
-                .catch(error => vscode.window.showErrorMessage(error))
+                .catch(error => consoleOut.appendLine(error))
             );
     }, () => {
         vscode.window.showWarningMessage('No tinydsl files for code generation found.');
@@ -30,7 +32,7 @@ export function generateSqlForDslFile(fileName: string) {
     generateSqlFiles([fileName], vscode.workspace.rootPath || '.', '/generated')
         .map(result => result
             .then(filename => vscode.window.showInformationMessage(`File ${filename} generated`))
-            .catch(error => vscode.window.showErrorMessage(error))
+            .catch(error => consoleOut.appendLine(error))
         );
 }
 

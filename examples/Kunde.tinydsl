@@ -20,7 +20,7 @@ Entity Kunde {
 }
 
 // Entity Kunde {
-// 	String Name
+//     String Name
 // }
 
 // Entity account {

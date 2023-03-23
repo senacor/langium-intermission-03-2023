@@ -29,6 +29,7 @@ generated
 !.vscode/launch.json
 !.vscode/extensions.json
 *.vsix
+.idea
 
 # misc
 /.sass-cache
