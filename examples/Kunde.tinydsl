@@ -6,7 +6,7 @@ import mein.test.namespace.otherFolder.Zins
 
 /**
 Ein Kunde hat einen Namen und ein Alter
-und kann einen Kredit mit einem gewissen Zins aufnehmen.
+und kann einen Kredit aufnehmen.
 */
 Entity Kunde {
     String Name
