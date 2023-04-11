@@ -1,12 +1,22 @@
 import {
-	AstNode,
-	AstNodeDescription,
-	AstNodeLocator,
-	DefaultIndexManager,
-	IndexManager,
-	LangiumDocument,
-	LangiumDocuments,
+    AstNode,
+    AstNodeDescription,
+    AstNodeLocator,
+    DefaultIndexManager,
+    DefaultLanguageServer,
+    IndexManager,
+    LangiumDocument,
+    LangiumDocuments,
+    MaybePromise,
 } from 'langium';
+import {
+    CancellationToken,
+    InitializeParams,
+    InitializeResult,
+    SymbolKind,
+    WorkspaceSymbol,
+    WorkspaceSymbolParams,
+} from 'vscode-languageserver';
 import { URI } from 'vscode-uri';
 
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
@@ -68,5 +78,57 @@ export class TinyDslIndexManager extends DefaultIndexManager {
         const thisDocument = document.parseResult.value as Document;
         const otherDocument = this.langiumDocuments().getOrCreateDocument(changed).parseResult.value as Document;
         return thisDocument.package === otherDocument.package;
+    }
+}
+
+export class TinyDslLanguageServer extends DefaultLanguageServer {
+    override buildInitializeResult(_params: InitializeParams): InitializeResult {
+        const result = super.buildInitializeResult(_params);
+        result.capabilities.workspaceSymbolProvider = true;
+        return result;
+    }
+}
+
+export interface WorkspaceSymbolProvider {
+    provideSymbols(
+        params: WorkspaceSymbolParams,
+        cancelToken?: CancellationToken,
+    ): MaybePromise<WorkspaceSymbol[] | undefined>;
+}
+
+export class TinyDslWorkspaceSymbolProvider implements WorkspaceSymbolProvider {
+    constructor(protected services: TinyDslServices) {
+        services.shared.lsp.Connection!.onWorkspaceSymbol((params: any, token: any) =>
+            this.provideSymbols(params, token),
+        );
+    }
+
+    provideSymbols(_params: WorkspaceSymbolParams, _cancelToken?: CancellationToken) {
+        const result: WorkspaceSymbol[] = [];
+        for (const element of this.services.shared.workspace.IndexManager.allElements()) {
+            result.push({
+                name: element.name,
+                kind: getSymbolKind(element.type),
+                location: {
+                    uri: element.documentUri.toString(),
+                },
+            });
+        }
+        return result;
+    }
+}
+
+export function getSymbolKind(type: string): SymbolKind {
+    switch (type) {
+        case 'Import':
+            return SymbolKind.Package;
+        case 'Entity':
+            return SymbolKind.Class;
+        case 'Field':
+            return SymbolKind.Field;
+        case 'Connection':
+            return SymbolKind.Method;
+        default:
+            return SymbolKind.Field;
     }
 }

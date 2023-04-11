@@ -1,30 +1,30 @@
 import {
-	createDefaultModule,
-	createDefaultSharedModule,
-	DefaultSharedModuleContext,
-	inject,
-	LangiumServices,
-	LangiumSharedServices,
-	Module,
-	PartialLangiumServices,
-	PartialLangiumSharedServices,
+    createDefaultModule,
+    createDefaultSharedModule,
+    DefaultSharedModuleContext,
+    inject,
+    LangiumServices,
+    LangiumSharedServices,
+    Module,
+    PartialLangiumServices,
+    PartialLangiumSharedServices,
 } from 'langium';
 
 import { TinyDslDocumentSymbolProvider } from '../outline/tiny-dsl-document-symbol-provicer';
 import { TinyDslScopeComputation } from '../scoping/scope-computation';
 import { TinyDslScopeProvider } from '../scoping/scope-provider';
-import {
-	TinyDslGeneratedModule,
-	TinyDslGeneratedSharedModule,
-} from './generated/module';
+import { TinyDslGeneratedModule, TinyDslGeneratedSharedModule } from './generated/module';
 import { TinyDslActionProvider } from './tiny-dsl-actions';
 import { TinyDslCompletionProvider } from './tiny-dsl-completions';
 import { TinyDslFormatter } from './tiny-dsl-formatter';
-import { IndexAccess, TinyDslIndexManager } from './tiny-dsl-services';
 import {
-	registerValidationChecks,
-	TinyDslValidator,
-} from './tiny-dsl-validator';
+    IndexAccess,
+    TinyDslIndexManager,
+    TinyDslLanguageServer,
+    TinyDslWorkspaceSymbolProvider,
+    WorkspaceSymbolProvider,
+} from './tiny-dsl-services';
+import { registerValidationChecks, TinyDslValidator } from './tiny-dsl-validator';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -35,6 +35,7 @@ export type TinyDslAddedServices = {
     };
     workspace: {
         IndexAccess: IndexAccess;
+        WorkspaceSymbolProvider: WorkspaceSymbolProvider;
     };
 };
 
@@ -65,10 +66,14 @@ export const TinyDslModule: Module<TinyDslServices, PartialLangiumServices & Tin
     },
     workspace: {
         IndexAccess: (services) => new IndexAccess(services),
+        WorkspaceSymbolProvider: (services) => new TinyDslWorkspaceSymbolProvider(services),
     },
 };
 
 export const TinyDslSharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
+    lsp: {
+        LanguageServer: (services) => new TinyDslLanguageServer(services),
+    },
     workspace: {
         IndexManager: (services) => new TinyDslIndexManager(services),
     },
