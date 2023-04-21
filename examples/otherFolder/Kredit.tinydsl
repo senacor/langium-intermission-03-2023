@@ -1,21 +1,21 @@
 package mein.test.namespace.otherFolder
 
 /**
-Ein Kredit mit Informationen über den verbleibenden Restbetrag.
+Ein Kredit
 */
 Entity Kredit {
     Int Saldo
 }
 
 /**
-Eine Bürgschaft.
+Eine Bürgschaft
 */
 Entity Aval {
     Int Saldo
 }
 
 /**
-Informationen zum Zinssatz.
+Informationen zum Zinssatz
 */
 Entity Zins {
     Int Zinssatz

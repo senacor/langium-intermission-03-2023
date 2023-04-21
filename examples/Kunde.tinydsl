@@ -4,10 +4,6 @@ import mein.test.namespace.otherFolder.Kredit
 import mein.test.namespace.otherFolder.Aval
 import mein.test.namespace.otherFolder.Zins
 
-/**
-Ein Kunde hat einen Namen und ein Alter
-und kann einen Kredit aufnehmen.
-*/
 Entity Kunde {
     String Name
     Int Alter
