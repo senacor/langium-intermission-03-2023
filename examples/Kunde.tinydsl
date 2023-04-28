@@ -1,25 +1,31 @@
-package mein.test.namespace
+package kunde
 
-import mein.test.namespace.otherFolder.Kredit
-import mein.test.namespace.otherFolder.Aval
-import mein.test.namespace.otherFolder.Zins
+import kredit.Kredit
+import kredit.Aval
+import kredit.Zins
 
 Entity Kunde {
     String Name
     Int Alter
 
-    has Kredit as Kontrahent1
+    has Account as Account
+    has Kredit as Kredit1
     has Aval as Aval1
-    has mein.test.namespace.otherFolder.Kredit as Kontrahent2
-    has mein.test.namespace.otherFolder.Aval as Aval2
     has Zins as Zins
+
+    has kredit.Kredit as Kredit2
+    has kredit.Aval as Aval2
+}
+
+Entity Account {
+    has Kunde as Inhaber
 }
 
 // Entity Kunde {
 //     String Name
 // }
 
-// Entity account {
+// Entity account2 {
 //     String ID
 //     Int ID
 

@@ -1,4 +1,4 @@
-package mein.test.namespace.otherFolder
+package kredit
 
 /**
 Ein Kredit
@@ -20,3 +20,17 @@ Informationen zum Zinssatz
 Entity Zins {
     Int Zinssatz
 }
+
+/*
+Topics to Show:
+- References Highlighting
+- Go To Definition
+- Hover
+- Rename Refactoring
+- Import mechanism
+- Validations / Quick Fixes
+- Auto-Completion
+- Formatting
+- SQL-Generation
+- Outline and Workspace Symbols
+*/

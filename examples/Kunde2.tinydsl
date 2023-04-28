@@ -1,4 +1,4 @@
-package mein.test.namespace
+package kunde
 
 // Entity Kunde {
 //     String Name
