@@ -88,7 +88,7 @@
         "@typescript-eslint/eslint-plugin": "~5.51.0",
         "@typescript-eslint/parser": "~5.51.0",
         "@vitest/ui": "~0.28.4",
-        "@vscode/vsce": "~2.18.0",
+        "@vscode/vsce": "~2.19.0",
         "concurrently": "^7.6.0",
         "esbuild": "~0.17.11",
         "eslint": "~8.33.0",
